@@ -5,18 +5,18 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.11.3
   creationTimestamp: null
-  name: resources.null.template.upbound.io
+  name: groups.group.googleworkspace.upbound.io
 spec:
-  group: null.template.upbound.io
+  group: group.googleworkspace.upbound.io
   names:
     categories:
     - crossplane
     - managed
-    - template
-    kind: Resource
-    listKind: ResourceList
-    plural: resources
-    singular: resource
+    - googleworkspace
+    kind: Group
+    listKind: GroupList
+    plural: groups
+    singular: group
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -35,7 +35,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Resource is the Schema for the Resources API. <no value>
+        description: Group is the Schema for the Groups API. <no value>
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -50,7 +50,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: ResourceSpec defines the desired state of Resource
+            description: GroupSpec defines the desired state of Group
             properties:
               deletionPolicy:
                 default: Delete
@@ -67,13 +67,25 @@ spec:
                 type: string
               forProvider:
                 properties:
-                  triggers:
-                    additionalProperties:
+                  aliases:
+                    description: asps.list of group's email addresses.
+                    items:
                       type: string
-                    description: A map of arbitrary strings that, when changed, will
-                      force the null resource to be replaced, re-running any associated
-                      provisioners.
-                    type: object
+                    type: array
+                  description:
+                    description: An extended description to help users determine the
+                      purpose of a group.For example, you can include information
+                      about who should join the group,the types of messages to send
+                      to the group, links to FAQs about the group, or related groups.
+                    type: string
+                  email:
+                    description: The group's email address. If your account has multiple
+                      domains,select the appropriate domain for the email address.
+                      The email must be unique.
+                    type: string
+                  name:
+                    description: The group's display name.
+                    type: string
                 type: object
               managementPolicy:
                 default: FullControl
@@ -261,20 +273,56 @@ spec:
             required:
             - forProvider
             type: object
+            x-kubernetes-validations:
+            - message: email is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.email)
           status:
-            description: ResourceStatus defines the observed state of Resource.
+            description: GroupStatus defines the observed state of Group.
             properties:
               atProvider:
                 properties:
+                  adminCreated:
+                    description: Value is true if this group was created by an administrator
+                      rather than a user.
+                    type: boolean
+                  aliases:
+                    description: asps.list of group's email addresses.
+                    items:
+                      type: string
+                    type: array
+                  description:
+                    description: An extended description to help users determine the
+                      purpose of a group.For example, you can include information
+                      about who should join the group,the types of messages to send
+                      to the group, links to FAQs about the group, or related groups.
+                    type: string
+                  directMembersCount:
+                    description: The number of users that are direct members of the
+                      group.If a group is a member (child) of this group (the parent),members
+                      of the child group are not counted in the directMembersCount
+                      property of the parent group.
+                    type: number
+                  email:
+                    description: The group's email address. If your account has multiple
+                      domains,select the appropriate domain for the email address.
+                      The email must be unique.
+                    type: string
+                  etag:
+                    description: ETag of the resource.
+                    type: string
                   id:
                     type: string
-                  triggers:
-                    additionalProperties:
+                  name:
+                    description: The group's display name.
+                    type: string
+                  nonEditableAliases:
+                    description: asps.list of the group's non-editable alias email
+                      addresses that are outside of the account's primary domain or
+                      subdomains. These are functioning email addresses used by the
+                      group.
+                    items:
                       type: string
-                    description: A map of arbitrary strings that, when changed, will
-                      force the null resource to be replaced, re-running any associated
-                      provisioners.
-                    type: object
+                    type: array
                 type: object
               conditions:
                 description: Conditions of the resource.

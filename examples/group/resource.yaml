@@ -1,7 +1,7 @@
-apiVersion: null.template.upbound.io/v1alpha1
+apiVersion: group.googleworkspace.upbound.io/v1alpha1
 kind: Resource
 metadata:
-  name: example
+  name: my-example-group
 spec:
   forProvider:
     triggers:
