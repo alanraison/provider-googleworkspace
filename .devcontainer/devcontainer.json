@@ -1,0 +1,15 @@
+{
+  "name": "provider-googleworkspace",
+  "dockerFile": "Dockerfile",
+  "remoteUser": "vscode",
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+  ],
+  "workspaceFolder": "/home/vscode/go/src/github.com/alanraison/provider-googleworkspace",
+  "workspaceMount": "source=.,target=/home/vscode/go/src/github.com/alanraison/provider-googleworkspace,type=bind",
+  "customizations": {
+    "vscode": {
+      "extensions": ["golang.go"]
+    }
+  }
+}
