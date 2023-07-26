@@ -1,10 +1,10 @@
 apiVersion: group.googleworkspace.upbound.io/v1alpha1
-kind: Resource
+kind: Group
 metadata:
   name: my-example-group
 spec:
   forProvider:
-    triggers:
-      example-trigger: example-value
+    description: "Crossplane Managed Google Group"
+    email: "my-test-email@example.com"
   providerConfigRef:
     name: default

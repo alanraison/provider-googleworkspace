@@ -8,7 +8,10 @@ import (
 	"context"
 	"encoding/json"
 
+	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
+	"golang.org/x/oauth2/google"
+
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -60,35 +63,42 @@ func TerraformSetupBuilder(version, providerSource, providerVersion string) terr
 			return ps, errors.Wrap(err, errTrackUsage)
 		}
 
-		data, err := resource.CommonCredentialExtractor(ctx, pc.Spec.Credentials.Source, client, pc.Spec.Credentials.CommonCredentialSelectors)
-		if err != nil {
-			return ps, errors.Wrap(err, errExtractCredentials)
-		}
-		creds := map[string]string{}
-		if err := json.Unmarshal(data, &creds); err != nil {
-			return ps, errors.Wrap(err, errUnmarshalCredentials)
-		}
-
-		// Set credentials in Terraform provider configuration.
 		ps.Configuration = map[string]any{}
-		if v, ok := creds[accessToken]; ok {
-			ps.Configuration[accessToken] = v
+
+		switch s := pc.Spec.Credentials.Source; s { //nolint:exhaustive
+		case xpv1.CredentialsSourceInjectedIdentity:
+			_, err := google.DefaultTokenSource(ctx, "https://www.googleapis.com/auth/admin.directory.groups", "https://www.googleapis.com/auth/admin.directory.users")
+			if err != nil {
+				return ps, errors.Wrap(err, "getting default credentials source")
+			}
+		default:
+			data, err := resource.CommonCredentialExtractor(ctx, pc.Spec.Credentials.Source, client, pc.Spec.Credentials.CommonCredentialSelectors)
+			if err != nil {
+				return ps, errors.Wrap(err, errExtractCredentials)
+			}
+			creds := map[string]string{}
+			if err := json.Unmarshal(data, &creds); err != nil {
+				return ps, errors.Wrap(err, errUnmarshalCredentials)
+			}
+			// Set credentials in Terraform provider configuration.
+			if v, ok := creds[accessToken]; ok {
+				ps.Configuration[accessToken] = v
+			}
+			if v, ok := creds[credentials]; ok {
+				ps.Configuration[credentials] = v
+			}
+			if v, ok := creds[impersonatedUserEmail]; ok {
+				ps.Configuration[impersonatedUserEmail] = v
+			}
+			if v, ok := creds[oauthScopes]; ok {
+				ps.Configuration[oauthScopes] = v
+			}
+			if v, ok := creds[serviceAccount]; ok {
+				ps.Configuration[serviceAccount] = v
+			}
 		}
-		if v, ok := creds[credentials]; ok {
-			ps.Configuration[credentials] = v
-		}
-		if v, ok := creds[customerID]; ok {
-			ps.Configuration[customerID] = v
-		}
-		if v, ok := creds[impersonatedUserEmail]; ok {
-			ps.Configuration[impersonatedUserEmail] = v
-		}
-		if v, ok := creds[oauthScopes]; ok {
-			ps.Configuration[oauthScopes] = v
-		}
-		if v, ok := creds[serviceAccount]; ok {
-			ps.Configuration[serviceAccount] = v
-		}
+		ps.Configuration[customerID] = pc.Spec.CustomerID
+
 		return ps, nil
 	}
 }

@@ -100,8 +100,13 @@ spec:
                 required:
                 - source
                 type: object
+              customerID:
+                description: CustomerID is the unique identifier for the Google Workspace
+                  account.
+                type: string
             required:
             - credentials
+            - customerID
             type: object
           status:
             description: A ProviderConfigStatus reflects the observed state of a ProviderConfig.

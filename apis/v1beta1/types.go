@@ -14,6 +14,8 @@ import (
 type ProviderConfigSpec struct {
 	// Credentials required to authenticate to this provider.
 	Credentials ProviderCredentials `json:"credentials"`
+	// CustomerID is the unique identifier for the Google Workspace account.
+	CustomerID  string              `json:"customerID"`
 }
 
 // ProviderCredentials required to authenticate.
