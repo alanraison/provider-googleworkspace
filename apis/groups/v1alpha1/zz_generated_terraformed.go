@@ -13,18 +13,18 @@ import (
 	"github.com/upbound/upjet/pkg/resource/json"
 )
 
-// GetTerraformResourceType returns Terraform resource type for this Group
-func (mg *Group) GetTerraformResourceType() string {
-	return "googleworkspace_group"
+// GetTerraformResourceType returns Terraform resource type for this Settings
+func (mg *Settings) GetTerraformResourceType() string {
+	return "googleworkspace_group_settings"
 }
 
-// GetConnectionDetailsMapping for this Group
-func (tr *Group) GetConnectionDetailsMapping() map[string]string {
+// GetConnectionDetailsMapping for this Settings
+func (tr *Settings) GetConnectionDetailsMapping() map[string]string {
 	return nil
 }
 
-// GetObservation of this Group
-func (tr *Group) GetObservation() (map[string]any, error) {
+// GetObservation of this Settings
+func (tr *Settings) GetObservation() (map[string]any, error) {
 	o, err := json.TFParser.Marshal(tr.Status.AtProvider)
 	if err != nil {
 		return nil, err
@@ -33,8 +33,8 @@ func (tr *Group) GetObservation() (map[string]any, error) {
 	return base, json.TFParser.Unmarshal(o, &base)
 }
 
-// SetObservation for this Group
-func (tr *Group) SetObservation(obs map[string]any) error {
+// SetObservation for this Settings
+func (tr *Settings) SetObservation(obs map[string]any) error {
 	p, err := json.TFParser.Marshal(obs)
 	if err != nil {
 		return err
@@ -42,16 +42,16 @@ func (tr *Group) SetObservation(obs map[string]any) error {
 	return json.TFParser.Unmarshal(p, &tr.Status.AtProvider)
 }
 
-// GetID returns ID of underlying Terraform resource of this Group
-func (tr *Group) GetID() string {
+// GetID returns ID of underlying Terraform resource of this Settings
+func (tr *Settings) GetID() string {
 	if tr.Status.AtProvider.ID == nil {
 		return ""
 	}
 	return *tr.Status.AtProvider.ID
 }
 
-// GetParameters of this Group
-func (tr *Group) GetParameters() (map[string]any, error) {
+// GetParameters of this Settings
+func (tr *Settings) GetParameters() (map[string]any, error) {
 	p, err := json.TFParser.Marshal(tr.Spec.ForProvider)
 	if err != nil {
 		return nil, err
@@ -60,8 +60,8 @@ func (tr *Group) GetParameters() (map[string]any, error) {
 	return base, json.TFParser.Unmarshal(p, &base)
 }
 
-// SetParameters for this Group
-func (tr *Group) SetParameters(params map[string]any) error {
+// SetParameters for this Settings
+func (tr *Settings) SetParameters(params map[string]any) error {
 	p, err := json.TFParser.Marshal(params)
 	if err != nil {
 		return err
@@ -69,10 +69,10 @@ func (tr *Group) SetParameters(params map[string]any) error {
 	return json.TFParser.Unmarshal(p, &tr.Spec.ForProvider)
 }
 
-// LateInitialize this Group using its observed tfState.
+// LateInitialize this Settings using its observed tfState.
 // returns True if there are any spec changes for the resource.
-func (tr *Group) LateInitialize(attrs []byte) (bool, error) {
-	params := &GroupParameters{}
+func (tr *Settings) LateInitialize(attrs []byte) (bool, error) {
+	params := &SettingsParameters{}
 	if err := json.TFParser.Unmarshal(attrs, params); err != nil {
 		return false, errors.Wrap(err, "failed to unmarshal Terraform state parameters for late-initialization")
 	}
@@ -83,6 +83,6 @@ func (tr *Group) LateInitialize(attrs []byte) (bool, error) {
 }
 
 // GetTerraformSchemaVersion returns the associated Terraform schema version
-func (tr *Group) GetTerraformSchemaVersion() int {
+func (tr *Settings) GetTerraformSchemaVersion() int {
 	return 0
 }

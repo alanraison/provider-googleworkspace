@@ -1,0 +1,1454 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.11.3
+  creationTimestamp: null
+  name: users.directory.googleworkspace.upbound.io
+spec:
+  group: directory.googleworkspace.upbound.io
+  names:
+    categories:
+    - crossplane
+    - managed
+    - googleworkspace
+    kind: User
+    listKind: UserList
+    plural: users
+    singular: user
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.conditions[?(@.type=='Ready')].status
+      name: READY
+      type: string
+    - jsonPath: .status.conditions[?(@.type=='Synced')].status
+      name: SYNCED
+      type: string
+    - jsonPath: .metadata.annotations.crossplane\.io/external-name
+      name: EXTERNAL-NAME
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: AGE
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: User is the Schema for the Users API. <no value>
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: UserSpec defines the desired state of User
+            properties:
+              deletionPolicy:
+                default: Delete
+                description: 'DeletionPolicy specifies what will happen to the underlying
+                  external when this managed resource is deleted - either "Delete"
+                  or "Orphan" the external resource. This field is planned to be deprecated
+                  in favor of the ManagementPolicy field in a future release. Currently,
+                  both could be set independently and non-default values would be
+                  honored if the feature flag is enabled. See the design doc for more
+                  information: https://github.com/crossplane/crossplane/blob/499895a25d1a1a0ba1604944ef98ac7a1a71f197/design/design-doc-observe-only-resources.md?plain=1#L223'
+                enum:
+                - Orphan
+                - Delete
+                type: string
+              forProvider:
+                properties:
+                  addresses:
+                    description: A list of the user's addresses. The maximum allowed
+                      data size is 10Kb.
+                    items:
+                      properties:
+                        country:
+                          description: Country
+                          type: string
+                        countryCode:
+                          description: The country code. Uses the ISO 3166-1 standard.
+                          type: string
+                        customType:
+                          description: If the address type is custom, this property
+                            contains the custom value.
+                          type: string
+                        extendedAddress:
+                          description: For extended addresses, such as an address
+                            that includes a sub-region.
+                          type: string
+                        formatted:
+                          description: A full and unstructured postal address. This
+                            is not synced with the structured address fields.
+                          type: string
+                        locality:
+                          description: The town or city of the address.
+                          type: string
+                        poBox:
+                          description: The post office box, if present.
+                          type: string
+                        postalCode:
+                          description: The ZIP or postal code, if applicable.
+                          type: string
+                        primary:
+                          description: If this is the user's primary address. The
+                            addresses list may contain only one primary address.
+                          type: boolean
+                        region:
+                          description: The abbreviated province or state.
+                          type: string
+                        sourceIsStructured:
+                          description: Indicates if the user-supplied address was
+                            formatted. Formatted addresses are not currently supported.
+                          type: boolean
+                        streetAddress:
+                          description: The street address, such as 1600 Amphitheatre
+                            Parkway. Whitespace within the string is ignored; however,
+                            newlines are significant.
+                          type: string
+                        type:
+                          description: 'The address type. Acceptable values: `custom`,
+                            `home`, `other`, `work`.'
+                          type: string
+                      required:
+                      - type
+                      type: object
+                    type: array
+                  aliases:
+                    description: asps.list of the user's alias email addresses.
+                    items:
+                      type: string
+                    type: array
+                  archived:
+                    description: Indicates if user is archived.
+                    type: boolean
+                  changePasswordAtNextLogin:
+                    description: Indicates if the user is forced to change their password
+                      at next login. This setting doesn't apply when the user signs
+                      in via a third-party identity provider.
+                    type: boolean
+                  customSchemas:
+                    description: Custom fields of the user.
+                    items:
+                      properties:
+                        schemaName:
+                          description: The name of the schema.
+                          type: string
+                        schemaNameRef:
+                          description: Reference to a Schema to populate schemaName.
+                          properties:
+                            name:
+                              description: Name of the referenced object.
+                              type: string
+                            policy:
+                              description: Policies for referencing.
+                              properties:
+                                resolution:
+                                  default: Required
+                                  description: Resolution specifies whether resolution
+                                    of this reference is required. The default is
+                                    'Required', which means the reconcile will fail
+                                    if the reference cannot be resolved. 'Optional'
+                                    means this reference will be a no-op if it cannot
+                                    be resolved.
+                                  enum:
+                                  - Required
+                                  - Optional
+                                  type: string
+                                resolve:
+                                  description: Resolve specifies when this reference
+                                    should be resolved. The default is 'IfNotPresent',
+                                    which will attempt to resolve the reference only
+                                    when the corresponding field is not present. Use
+                                    'Always' to resolve the reference on every reconcile.
+                                  enum:
+                                  - Always
+                                  - IfNotPresent
+                                  type: string
+                              type: object
+                          required:
+                          - name
+                          type: object
+                        schemaNameSelector:
+                          description: Selector for a Schema to populate schemaName.
+                          properties:
+                            matchControllerRef:
+                              description: MatchControllerRef ensures an object with
+                                the same controller reference as the selecting object
+                                is selected.
+                              type: boolean
+                            matchLabels:
+                              additionalProperties:
+                                type: string
+                              description: MatchLabels ensures an object with matching
+                                labels is selected.
+                              type: object
+                            policy:
+                              description: Policies for selection.
+                              properties:
+                                resolution:
+                                  default: Required
+                                  description: Resolution specifies whether resolution
+                                    of this reference is required. The default is
+                                    'Required', which means the reconcile will fail
+                                    if the reference cannot be resolved. 'Optional'
+                                    means this reference will be a no-op if it cannot
+                                    be resolved.
+                                  enum:
+                                  - Required
+                                  - Optional
+                                  type: string
+                                resolve:
+                                  description: Resolve specifies when this reference
+                                    should be resolved. The default is 'IfNotPresent',
+                                    which will attempt to resolve the reference only
+                                    when the corresponding field is not present. Use
+                                    'Always' to resolve the reference on every reconcile.
+                                  enum:
+                                  - Always
+                                  - IfNotPresent
+                                  type: string
+                              type: object
+                          type: object
+                        schemaValues:
+                          additionalProperties:
+                            type: string
+                          description: JSON encoded map that represents key/value
+                            pairs that correspond to the given schema.
+                          type: object
+                      required:
+                      - schemaValues
+                      type: object
+                    type: array
+                  emails:
+                    description: A list of the user's email addresses. The maximum
+                      allowed data size is 10Kb.
+                    items:
+                      properties:
+                        address:
+                          description: The user's email address. Also serves as the
+                            email ID. This value can be the user's primary email address
+                            or an alias.
+                          type: string
+                        customType:
+                          description: If the value of type is custom, this property
+                            contains the custom type string.
+                          type: string
+                        primary:
+                          description: Defaults to `false`. Indicates if this is the
+                            user's primary email. Only one entry can be marked as
+                            primary.
+                          type: boolean
+                        type:
+                          description: 'The type of the email account. Acceptable
+                            values: `custom`, `home`, `other`, `work`.'
+                          type: string
+                      required:
+                      - type
+                      type: object
+                    type: array
+                  externalIds:
+                    description: A list of external IDs for the user, such as an employee
+                      or network ID. The maximum allowed data size is 2Kb.
+                    items:
+                      properties:
+                        customType:
+                          description: If the external ID type is custom, this property
+                            contains the custom value and must be set.
+                          type: string
+                        type:
+                          description: 'The type of external ID. If set to custom,
+                            customType must also be set. Acceptable values: `account`,
+                            `custom`, `customer`, `login_id`, `network`, `organization`.'
+                          type: string
+                        value:
+                          description: The value of the ID.
+                          type: string
+                      required:
+                      - type
+                      - value
+                      type: object
+                    type: array
+                  hashFunction:
+                    description: Stores the hash format of the password property.
+                      We recommend sending the password property value as a base 16
+                      bit hexadecimal-encoded hash value. Set the hashFunction values
+                      as either the SHA-1, MD5, or crypt hash format.
+                    type: string
+                  ims:
+                    description: The user's Instant Messenger (IM) accounts. A user
+                      account can have multiple ims properties. But, only one of these
+                      ims properties can be the primary IM contact. The maximum allowed
+                      data size is 2Kb.
+                    items:
+                      properties:
+                        customProtocol:
+                          description: If the protocol value is custom_protocol, this
+                            property holds the custom protocol's string.
+                          type: string
+                        customType:
+                          description: If the IM type is custom, this property holds
+                            the custom type string.
+                          type: string
+                        im:
+                          description: The user's IM network ID.
+                          type: string
+                        primary:
+                          description: If this is the user's primary IM. Only one
+                            entry in the IM list can have a value of true.
+                          type: boolean
+                        protocol:
+                          description: 'An IM protocol identifies the IM network.
+                            The value can be a custom network or the standard network.
+                            Acceptable values: `aim`, `custom_protocol`, `gtalk`,
+                            `icq`, `jabber`, `msn`, `net_meeting`, `qq`, `skype`,
+                            `yahoo`.'
+                          type: string
+                        type:
+                          description: 'Acceptable values: `custom`, `home`, `other`,
+                            `work`.'
+                          type: string
+                      required:
+                      - protocol
+                      - type
+                      type: object
+                    type: array
+                  includeInGlobalAddressList:
+                    description: Defaults to `true`. Indicates if the user's profile
+                      is visible in the Google Workspace global address list when
+                      the contact sharing feature is enabled for the domain.
+                    type: boolean
+                  ipAllowlist:
+                    description: If true, the user's IP address is added to the allow
+                      list.
+                    type: boolean
+                  isAdmin:
+                    description: Indicates a user with super admininistrator privileges.
+                    type: boolean
+                  keywords:
+                    description: A list of the user's keywords. The maximum allowed
+                      data size is 1Kb.
+                    items:
+                      properties:
+                        customType:
+                          description: Custom Type.
+                          type: string
+                        type:
+                          description: 'Each entry can have a type which indicates
+                            standard type of that entry. For example, keyword could
+                            be of type occupation or outlook. In addition to the standard
+                            type, an entry can have a custom type and can give it
+                            any name. Such types should have the CUSTOM value as type
+                            and also have a customType value. Acceptable values: `custom`,
+                            `mission`, `occupation`, `outlook`'
+                          type: string
+                        value:
+                          description: Keyword.
+                          type: string
+                      required:
+                      - type
+                      - value
+                      type: object
+                    type: array
+                  languages:
+                    description: A list of the user's languages. The maximum allowed
+                      data size is 1Kb.
+                    items:
+                      properties:
+                        customLanguage:
+                          description: Other language. A user can provide their own
+                            language name if there is no corresponding Google III
+                            language code. If this is set, LanguageCode can't be set.
+                          type: string
+                        languageCode:
+                          description: Defaults to `en`. Language Code. Should be
+                            used for storing Google III LanguageCode string representation
+                            for language. Illegal values cause SchemaException.
+                          type: string
+                        preference:
+                          description: Defaults to `preferred`. If present, controls
+                            whether the specified languageCode is the user's preferred
+                            language. Allowed values are `preferred` and `not_preferred`.
+                          type: string
+                      type: object
+                    type: array
+                  locations:
+                    description: A list of the user's locations. The maximum allowed
+                      data size is 10Kb.
+                    items:
+                      properties:
+                        area:
+                          description: Textual location. This is most useful for display
+                            purposes to concisely describe the location. For example,
+                            Mountain View, CA or Near Seattle.
+                          type: string
+                        buildingId:
+                          description: Building identifier.
+                          type: string
+                        customType:
+                          description: If the location type is custom, this property
+                            contains the custom value.
+                          type: string
+                        deskCode:
+                          description: Most specific textual code of individual desk
+                            location.
+                          type: string
+                        floorName:
+                          description: Floor name/number.
+                          type: string
+                        floorSection:
+                          description: Floor section. More specific location within
+                            the floor. For example, if a floor is divided into sections
+                            A, B, and C, this field would identify one of those values.
+                          type: string
+                        type:
+                          description: 'The location type. Acceptable values: `custom`,
+                            `default`, `desk`'
+                          type: string
+                      required:
+                      - type
+                      type: object
+                    type: array
+                  name:
+                    description: Holds the given and family names of the user, and
+                      the read-only fullName value. The maximum number of characters
+                      in the givenName and in the familyName values is 60. In addition,
+                      name values support unicode/UTF-8 characters, and can contain
+                      spaces, letters (a-z), numbers (0-9), dashes (-), forward slashes
+                      (/), and periods (.). Maximum allowed data size for this field
+                      is 1Kb.
+                    items:
+                      properties:
+                        familyName:
+                          description: The user's last name.
+                          type: string
+                        givenName:
+                          description: The user's first name.
+                          type: string
+                      required:
+                      - familyName
+                      type: object
+                    type: array
+                  orgUnitPath:
+                    description: The full path of the parent organization associated
+                      with the user. If the parent organization is the top-level,
+                      it is represented as a forward slash (/).
+                    type: string
+                  organizations:
+                    description: A list of organizations the user belongs to. The
+                      maximum allowed data size is 10Kb.
+                    items:
+                      properties:
+                        costCenter:
+                          description: The cost center of the user's organization.
+                          type: string
+                        customType:
+                          description: If the value of type is custom, this property
+                            contains the custom value.
+                          type: string
+                        department:
+                          description: Specifies the department within the organization,
+                            such as sales or engineering.
+                          type: string
+                        description:
+                          description: The description of the organization.
+                          type: string
+                        domain:
+                          description: The domain the organization belongs to.
+                          type: string
+                        fullTimeEquivalent:
+                          description: The full-time equivalent millipercent within
+                            the organization (100000 = 100%)
+                          type: number
+                        location:
+                          description: The physical location of the organization.
+                            This does not need to be a fully qualified address.
+                          type: string
+                        name:
+                          description: The name of the organization.
+                          type: string
+                        primary:
+                          description: Indicates if this is the user's primary organization.
+                            A user may only have one primary organization.
+                          type: boolean
+                        symbol:
+                          description: Text string symbol of the organization. For
+                            example, the text symbol for Google is GOOG.
+                          type: string
+                        title:
+                          description: The user's title within the organization. For
+                            example, member or engineer.
+                          type: string
+                        type:
+                          description: 'The type of organization. Acceptable values:
+                            `domain_only`, `school`, `unknown`, `work`.'
+                          type: string
+                      required:
+                      - type
+                      type: object
+                    type: array
+                  passwordSecretRef:
+                    description: Stores the password for the user account. A password
+                      can contain any combination of ASCII characters. A minimum of
+                      8 characters is required. The maximum length is 100 characters.
+                      As the API does not return the value of password, this field
+                      is write-only, and the value stored in the state will be what
+                      is provided in the configuration. The field is required on create
+                      and will be empty on import.
+                    properties:
+                      key:
+                        description: The key to select.
+                        type: string
+                      name:
+                        description: Name of the secret.
+                        type: string
+                      namespace:
+                        description: Namespace of the secret.
+                        type: string
+                    required:
+                    - key
+                    - name
+                    - namespace
+                    type: object
+                  phones:
+                    description: A list of the user's phone numbers. The maximum allowed
+                      data size is 1Kb.
+                    items:
+                      properties:
+                        customType:
+                          description: If the phone number type is custom, this property
+                            contains the custom value and must be set.
+                          type: string
+                        primary:
+                          description: Indicates if this is the user's primary phone
+                            number. A user may only have one primary phone number.
+                          type: boolean
+                        type:
+                          description: 'The type of phone number. Acceptable values:
+                            `assistant`, `callback`, `car`, `company_main` , `custom`,
+                            `grand_central`, `home`, `home_fax`, `isdn`, `main`, `mobile`,
+                            `other`, `other_fax`, `pager`, `radio`, `telex`, `tty_tdd`,
+                            `work`, `work_fax`, `work_mobile`, `work_pager`.'
+                          type: string
+                        value:
+                          description: A human-readable phone number. It may be in
+                            any telephone number format.
+                          type: string
+                      required:
+                      - type
+                      - value
+                      type: object
+                    type: array
+                  posixAccounts:
+                    description: A list of POSIX account information for the user.
+                    items:
+                      properties:
+                        accountId:
+                          description: A POSIX account field identifier.
+                          type: string
+                        gecos:
+                          description: The GECOS (user information) for this account.
+                          type: string
+                        gid:
+                          description: The default group ID.
+                          type: string
+                        homeDirectory:
+                          description: The path to the home directory for this account.
+                          type: string
+                        operatingSystemType:
+                          description: 'The operating system type for this account.
+                            Acceptable values: `linux`, `unspecified`, `windows`.'
+                          type: string
+                        primary:
+                          description: If this is user's primary account within the
+                            SystemId.
+                          type: boolean
+                        shell:
+                          description: The path to the login shell for this account.
+                          type: string
+                        systemId:
+                          description: System identifier for which account Username
+                            or Uid apply to.
+                          type: string
+                        uid:
+                          description: The POSIX compliant user ID.
+                          type: string
+                        username:
+                          description: The username of the account.
+                          type: string
+                      type: object
+                    type: array
+                  primaryEmail:
+                    description: The user's primary email address. The primaryEmail
+                      must be unique and cannot be an alias of another user.
+                    type: string
+                  recoveryEmail:
+                    description: Recovery email of the user.
+                    type: string
+                  recoveryPhone:
+                    description: 'Recovery phone of the user. The phone number must
+                      be in the E.164 format, starting with the plus sign (+). Example:
+                      +16506661212.'
+                    type: string
+                  relations:
+                    description: A list of the user's relationships to other users.
+                      The maximum allowed data size for this field is 2Kb.
+                    items:
+                      properties:
+                        customType:
+                          description: If the value of type is custom, this property
+                            contains the custom type string.
+                          type: string
+                        type:
+                          description: 'The type of relation. Acceptable values: `admin_assistant`,
+                            `assistant`, `brother`, `child`, `custom`, `domestic_partner`,
+                            `dotted_line_manager`, `exec_assistant`, `father`, `friend`,
+                            `manager`, `mother`, `parent`, `partner`, `referred_by`,
+                            `relative`, `sister`, `spouse`.'
+                          type: string
+                        value:
+                          description: The name of the person the user is related
+                            to.
+                          type: string
+                      required:
+                      - type
+                      - value
+                      type: object
+                    type: array
+                  sshPublicKeys:
+                    description: A list of SSH public keys. The maximum allowed data
+                      size is 10Kb.
+                    items:
+                      properties:
+                        expirationTimeUsec:
+                          description: An expiration time in microseconds since epoch.
+                          type: string
+                        key:
+                          description: An SSH public key.
+                          type: string
+                      required:
+                      - key
+                      type: object
+                    type: array
+                  suspended:
+                    description: Indicates if user is suspended.
+                    type: boolean
+                  websites:
+                    description: A list of the user's websites. The maximum allowed
+                      data size is 2Kb.
+                    items:
+                      properties:
+                        customType:
+                          description: The custom type. Only used if the type is custom.
+                          type: string
+                        primary:
+                          description: If this is user's primary website or not.
+                          type: boolean
+                        type:
+                          description: 'The type or purpose of the website. For example,
+                            a website could be labeled as home or blog. Alternatively,
+                            an entry can have a custom type Custom types must have
+                            a customType value. Acceptable values: `app_install_page`,
+                            `blog`, `custom`, `ftp` , `home`, `home_page`, `other`,
+                            `profile`, `reservations`, `resume`, `work`.'
+                          type: string
+                        value:
+                          description: The URL of the website.
+                          type: string
+                      required:
+                      - type
+                      - value
+                      type: object
+                    type: array
+                type: object
+              managementPolicy:
+                default: FullControl
+                description: 'THIS IS AN ALPHA FIELD. Do not use it in production.
+                  It is not honored unless the relevant Crossplane feature flag is
+                  enabled, and may be changed or removed without notice. ManagementPolicy
+                  specifies the level of control Crossplane has over the managed external
+                  resource. This field is planned to replace the DeletionPolicy field
+                  in a future release. Currently, both could be set independently
+                  and non-default values would be honored if the feature flag is enabled.
+                  See the design doc for more information: https://github.com/crossplane/crossplane/blob/499895a25d1a1a0ba1604944ef98ac7a1a71f197/design/design-doc-observe-only-resources.md?plain=1#L223'
+                enum:
+                - FullControl
+                - ObserveOnly
+                - OrphanOnDelete
+                type: string
+              providerConfigRef:
+                default:
+                  name: default
+                description: ProviderConfigReference specifies how the provider that
+                  will be used to create, observe, update, and delete this managed
+                  resource should be configured.
+                properties:
+                  name:
+                    description: Name of the referenced object.
+                    type: string
+                  policy:
+                    description: Policies for referencing.
+                    properties:
+                      resolution:
+                        default: Required
+                        description: Resolution specifies whether resolution of this
+                          reference is required. The default is 'Required', which
+                          means the reconcile will fail if the reference cannot be
+                          resolved. 'Optional' means this reference will be a no-op
+                          if it cannot be resolved.
+                        enum:
+                        - Required
+                        - Optional
+                        type: string
+                      resolve:
+                        description: Resolve specifies when this reference should
+                          be resolved. The default is 'IfNotPresent', which will attempt
+                          to resolve the reference only when the corresponding field
+                          is not present. Use 'Always' to resolve the reference on
+                          every reconcile.
+                        enum:
+                        - Always
+                        - IfNotPresent
+                        type: string
+                    type: object
+                required:
+                - name
+                type: object
+              providerRef:
+                description: 'ProviderReference specifies the provider that will be
+                  used to create, observe, update, and delete this managed resource.
+                  Deprecated: Please use ProviderConfigReference, i.e. `providerConfigRef`'
+                properties:
+                  name:
+                    description: Name of the referenced object.
+                    type: string
+                  policy:
+                    description: Policies for referencing.
+                    properties:
+                      resolution:
+                        default: Required
+                        description: Resolution specifies whether resolution of this
+                          reference is required. The default is 'Required', which
+                          means the reconcile will fail if the reference cannot be
+                          resolved. 'Optional' means this reference will be a no-op
+                          if it cannot be resolved.
+                        enum:
+                        - Required
+                        - Optional
+                        type: string
+                      resolve:
+                        description: Resolve specifies when this reference should
+                          be resolved. The default is 'IfNotPresent', which will attempt
+                          to resolve the reference only when the corresponding field
+                          is not present. Use 'Always' to resolve the reference on
+                          every reconcile.
+                        enum:
+                        - Always
+                        - IfNotPresent
+                        type: string
+                    type: object
+                required:
+                - name
+                type: object
+              publishConnectionDetailsTo:
+                description: PublishConnectionDetailsTo specifies the connection secret
+                  config which contains a name, metadata and a reference to secret
+                  store config to which any connection details for this managed resource
+                  should be written. Connection details frequently include the endpoint,
+                  username, and password required to connect to the managed resource.
+                properties:
+                  configRef:
+                    default:
+                      name: default
+                    description: SecretStoreConfigRef specifies which secret store
+                      config should be used for this ConnectionSecret.
+                    properties:
+                      name:
+                        description: Name of the referenced object.
+                        type: string
+                      policy:
+                        description: Policies for referencing.
+                        properties:
+                          resolution:
+                            default: Required
+                            description: Resolution specifies whether resolution of
+                              this reference is required. The default is 'Required',
+                              which means the reconcile will fail if the reference
+                              cannot be resolved. 'Optional' means this reference
+                              will be a no-op if it cannot be resolved.
+                            enum:
+                            - Required
+                            - Optional
+                            type: string
+                          resolve:
+                            description: Resolve specifies when this reference should
+                              be resolved. The default is 'IfNotPresent', which will
+                              attempt to resolve the reference only when the corresponding
+                              field is not present. Use 'Always' to resolve the reference
+                              on every reconcile.
+                            enum:
+                            - Always
+                            - IfNotPresent
+                            type: string
+                        type: object
+                    required:
+                    - name
+                    type: object
+                  metadata:
+                    description: Metadata is the metadata for connection secret.
+                    properties:
+                      annotations:
+                        additionalProperties:
+                          type: string
+                        description: Annotations are the annotations to be added to
+                          connection secret. - For Kubernetes secrets, this will be
+                          used as "metadata.annotations". - It is up to Secret Store
+                          implementation for others store types.
+                        type: object
+                      labels:
+                        additionalProperties:
+                          type: string
+                        description: Labels are the labels/tags to be added to connection
+                          secret. - For Kubernetes secrets, this will be used as "metadata.labels".
+                          - It is up to Secret Store implementation for others store
+                          types.
+                        type: object
+                      type:
+                        description: Type is the SecretType for the connection secret.
+                          - Only valid for Kubernetes Secret Stores.
+                        type: string
+                    type: object
+                  name:
+                    description: Name is the name of the connection secret.
+                    type: string
+                required:
+                - name
+                type: object
+              writeConnectionSecretToRef:
+                description: WriteConnectionSecretToReference specifies the namespace
+                  and name of a Secret to which any connection details for this managed
+                  resource should be written. Connection details frequently include
+                  the endpoint, username, and password required to connect to the
+                  managed resource. This field is planned to be replaced in a future
+                  release in favor of PublishConnectionDetailsTo. Currently, both
+                  could be set independently and connection details would be published
+                  to both without affecting each other.
+                properties:
+                  name:
+                    description: Name of the secret.
+                    type: string
+                  namespace:
+                    description: Namespace of the secret.
+                    type: string
+                required:
+                - name
+                - namespace
+                type: object
+            required:
+            - forProvider
+            type: object
+            x-kubernetes-validations:
+            - message: name is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.name)
+            - message: primaryEmail is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.primaryEmail)
+          status:
+            description: UserStatus defines the observed state of User.
+            properties:
+              atProvider:
+                properties:
+                  addresses:
+                    description: A list of the user's addresses. The maximum allowed
+                      data size is 10Kb.
+                    items:
+                      properties:
+                        country:
+                          description: Country
+                          type: string
+                        countryCode:
+                          description: The country code. Uses the ISO 3166-1 standard.
+                          type: string
+                        customType:
+                          description: If the address type is custom, this property
+                            contains the custom value.
+                          type: string
+                        extendedAddress:
+                          description: For extended addresses, such as an address
+                            that includes a sub-region.
+                          type: string
+                        formatted:
+                          description: A full and unstructured postal address. This
+                            is not synced with the structured address fields.
+                          type: string
+                        locality:
+                          description: The town or city of the address.
+                          type: string
+                        poBox:
+                          description: The post office box, if present.
+                          type: string
+                        postalCode:
+                          description: The ZIP or postal code, if applicable.
+                          type: string
+                        primary:
+                          description: If this is the user's primary address. The
+                            addresses list may contain only one primary address.
+                          type: boolean
+                        region:
+                          description: The abbreviated province or state.
+                          type: string
+                        sourceIsStructured:
+                          description: Indicates if the user-supplied address was
+                            formatted. Formatted addresses are not currently supported.
+                          type: boolean
+                        streetAddress:
+                          description: The street address, such as 1600 Amphitheatre
+                            Parkway. Whitespace within the string is ignored; however,
+                            newlines are significant.
+                          type: string
+                        type:
+                          description: 'The address type. Acceptable values: `custom`,
+                            `home`, `other`, `work`.'
+                          type: string
+                      type: object
+                    type: array
+                  agreedToTerms:
+                    description: This property is true if the user has completed an
+                      initial login and accepted the Terms of Service agreement.
+                    type: boolean
+                  aliases:
+                    description: asps.list of the user's alias email addresses.
+                    items:
+                      type: string
+                    type: array
+                  archived:
+                    description: Indicates if user is archived.
+                    type: boolean
+                  changePasswordAtNextLogin:
+                    description: Indicates if the user is forced to change their password
+                      at next login. This setting doesn't apply when the user signs
+                      in via a third-party identity provider.
+                    type: boolean
+                  creationTime:
+                    description: The time the user's account was created. The value
+                      is in ISO 8601 date and time format. The time is the complete
+                      date plus hours, minutes, and seconds in the form YYYY-MM-DDThh:mm:ssTZD.
+                      For example, 2010-04-05T17:30:04+01:00.
+                    type: string
+                  customSchemas:
+                    description: Custom fields of the user.
+                    items:
+                      properties:
+                        schemaName:
+                          description: The name of the schema.
+                          type: string
+                        schemaValues:
+                          additionalProperties:
+                            type: string
+                          description: JSON encoded map that represents key/value
+                            pairs that correspond to the given schema.
+                          type: object
+                      type: object
+                    type: array
+                  customerId:
+                    description: The customer ID to retrieve all account users. You
+                      can use the alias my_customer to represent your account's customerId.
+                      As a reseller administrator, you can use the resold customer
+                      account's customerId. To get a customerId, use the account's
+                      primary domain in the domain parameter of a users.list request.
+                    type: string
+                  deletionTime:
+                    description: The time the user's account was deleted. The value
+                      is in ISO 8601 date and time format The time is the complete
+                      date plus hours, minutes, and seconds in the form YYYY-MM-DDThh:mm:ssTZD.
+                      For example 2010-04-05T17:30:04+01:00.
+                    type: string
+                  emails:
+                    description: A list of the user's email addresses. The maximum
+                      allowed data size is 10Kb.
+                    items:
+                      properties:
+                        address:
+                          description: The user's email address. Also serves as the
+                            email ID. This value can be the user's primary email address
+                            or an alias.
+                          type: string
+                        customType:
+                          description: If the value of type is custom, this property
+                            contains the custom type string.
+                          type: string
+                        primary:
+                          description: Defaults to `false`. Indicates if this is the
+                            user's primary email. Only one entry can be marked as
+                            primary.
+                          type: boolean
+                        type:
+                          description: 'The type of the email account. Acceptable
+                            values: `custom`, `home`, `other`, `work`.'
+                          type: string
+                      type: object
+                    type: array
+                  etag:
+                    description: ETag of the resource.
+                    type: string
+                  externalIds:
+                    description: A list of external IDs for the user, such as an employee
+                      or network ID. The maximum allowed data size is 2Kb.
+                    items:
+                      properties:
+                        customType:
+                          description: If the external ID type is custom, this property
+                            contains the custom value and must be set.
+                          type: string
+                        type:
+                          description: 'The type of external ID. If set to custom,
+                            customType must also be set. Acceptable values: `account`,
+                            `custom`, `customer`, `login_id`, `network`, `organization`.'
+                          type: string
+                        value:
+                          description: The value of the ID.
+                          type: string
+                      type: object
+                    type: array
+                  hashFunction:
+                    description: Stores the hash format of the password property.
+                      We recommend sending the password property value as a base 16
+                      bit hexadecimal-encoded hash value. Set the hashFunction values
+                      as either the SHA-1, MD5, or crypt hash format.
+                    type: string
+                  id:
+                    type: string
+                  ims:
+                    description: The user's Instant Messenger (IM) accounts. A user
+                      account can have multiple ims properties. But, only one of these
+                      ims properties can be the primary IM contact. The maximum allowed
+                      data size is 2Kb.
+                    items:
+                      properties:
+                        customProtocol:
+                          description: If the protocol value is custom_protocol, this
+                            property holds the custom protocol's string.
+                          type: string
+                        customType:
+                          description: If the IM type is custom, this property holds
+                            the custom type string.
+                          type: string
+                        im:
+                          description: The user's IM network ID.
+                          type: string
+                        primary:
+                          description: If this is the user's primary IM. Only one
+                            entry in the IM list can have a value of true.
+                          type: boolean
+                        protocol:
+                          description: 'An IM protocol identifies the IM network.
+                            The value can be a custom network or the standard network.
+                            Acceptable values: `aim`, `custom_protocol`, `gtalk`,
+                            `icq`, `jabber`, `msn`, `net_meeting`, `qq`, `skype`,
+                            `yahoo`.'
+                          type: string
+                        type:
+                          description: 'Acceptable values: `custom`, `home`, `other`,
+                            `work`.'
+                          type: string
+                      type: object
+                    type: array
+                  includeInGlobalAddressList:
+                    description: Defaults to `true`. Indicates if the user's profile
+                      is visible in the Google Workspace global address list when
+                      the contact sharing feature is enabled for the domain.
+                    type: boolean
+                  ipAllowlist:
+                    description: If true, the user's IP address is added to the allow
+                      list.
+                    type: boolean
+                  isAdmin:
+                    description: Indicates a user with super admininistrator privileges.
+                    type: boolean
+                  isDelegatedAdmin:
+                    description: Indicates if the user is a delegated administrator.
+                    type: boolean
+                  isEnforcedIn2StepVerification:
+                    description: Is 2-step verification enforced.
+                    type: boolean
+                  isEnrolledIn2StepVerification:
+                    description: Is enrolled in 2-step verification.
+                    type: boolean
+                  isMailboxSetup:
+                    description: Indicates if the user's Google mailbox is created.
+                      This property is only applicable if the user has been assigned
+                      a Gmail license.
+                    type: boolean
+                  keywords:
+                    description: A list of the user's keywords. The maximum allowed
+                      data size is 1Kb.
+                    items:
+                      properties:
+                        customType:
+                          description: Custom Type.
+                          type: string
+                        type:
+                          description: 'Each entry can have a type which indicates
+                            standard type of that entry. For example, keyword could
+                            be of type occupation or outlook. In addition to the standard
+                            type, an entry can have a custom type and can give it
+                            any name. Such types should have the CUSTOM value as type
+                            and also have a customType value. Acceptable values: `custom`,
+                            `mission`, `occupation`, `outlook`'
+                          type: string
+                        value:
+                          description: Keyword.
+                          type: string
+                      type: object
+                    type: array
+                  languages:
+                    description: A list of the user's languages. The maximum allowed
+                      data size is 1Kb.
+                    items:
+                      properties:
+                        customLanguage:
+                          description: Other language. A user can provide their own
+                            language name if there is no corresponding Google III
+                            language code. If this is set, LanguageCode can't be set.
+                          type: string
+                        languageCode:
+                          description: Defaults to `en`. Language Code. Should be
+                            used for storing Google III LanguageCode string representation
+                            for language. Illegal values cause SchemaException.
+                          type: string
+                        preference:
+                          description: Defaults to `preferred`. If present, controls
+                            whether the specified languageCode is the user's preferred
+                            language. Allowed values are `preferred` and `not_preferred`.
+                          type: string
+                      type: object
+                    type: array
+                  lastLoginTime:
+                    description: The last time the user logged into the user's account.
+                      The value is in ISO 8601 date and time format. The time is the
+                      complete date plus hours, minutes, and seconds in the form YYYY-MM-DDThh:mm:ssTZD.
+                      For example, 2010-04-05T17:30:04+01:00.
+                    type: string
+                  locations:
+                    description: A list of the user's locations. The maximum allowed
+                      data size is 10Kb.
+                    items:
+                      properties:
+                        area:
+                          description: Textual location. This is most useful for display
+                            purposes to concisely describe the location. For example,
+                            Mountain View, CA or Near Seattle.
+                          type: string
+                        buildingId:
+                          description: Building identifier.
+                          type: string
+                        customType:
+                          description: If the location type is custom, this property
+                            contains the custom value.
+                          type: string
+                        deskCode:
+                          description: Most specific textual code of individual desk
+                            location.
+                          type: string
+                        floorName:
+                          description: Floor name/number.
+                          type: string
+                        floorSection:
+                          description: Floor section. More specific location within
+                            the floor. For example, if a floor is divided into sections
+                            A, B, and C, this field would identify one of those values.
+                          type: string
+                        type:
+                          description: 'The location type. Acceptable values: `custom`,
+                            `default`, `desk`'
+                          type: string
+                      type: object
+                    type: array
+                  name:
+                    description: Holds the given and family names of the user, and
+                      the read-only fullName value. The maximum number of characters
+                      in the givenName and in the familyName values is 60. In addition,
+                      name values support unicode/UTF-8 characters, and can contain
+                      spaces, letters (a-z), numbers (0-9), dashes (-), forward slashes
+                      (/), and periods (.). Maximum allowed data size for this field
+                      is 1Kb.
+                    items:
+                      properties:
+                        familyName:
+                          description: The user's last name.
+                          type: string
+                        fullName:
+                          description: The user's full name formed by concatenating
+                            the first and last name values.
+                          type: string
+                        givenName:
+                          description: The user's first name.
+                          type: string
+                      type: object
+                    type: array
+                  nonEditableAliases:
+                    description: asps.list of the user's non-editable alias email
+                      addresses. These are typically outside the account's primary
+                      domain or sub-domain.
+                    items:
+                      type: string
+                    type: array
+                  orgUnitPath:
+                    description: The full path of the parent organization associated
+                      with the user. If the parent organization is the top-level,
+                      it is represented as a forward slash (/).
+                    type: string
+                  organizations:
+                    description: A list of organizations the user belongs to. The
+                      maximum allowed data size is 10Kb.
+                    items:
+                      properties:
+                        costCenter:
+                          description: The cost center of the user's organization.
+                          type: string
+                        customType:
+                          description: If the value of type is custom, this property
+                            contains the custom value.
+                          type: string
+                        department:
+                          description: Specifies the department within the organization,
+                            such as sales or engineering.
+                          type: string
+                        description:
+                          description: The description of the organization.
+                          type: string
+                        domain:
+                          description: The domain the organization belongs to.
+                          type: string
+                        fullTimeEquivalent:
+                          description: The full-time equivalent millipercent within
+                            the organization (100000 = 100%)
+                          type: number
+                        location:
+                          description: The physical location of the organization.
+                            This does not need to be a fully qualified address.
+                          type: string
+                        name:
+                          description: The name of the organization.
+                          type: string
+                        primary:
+                          description: Indicates if this is the user's primary organization.
+                            A user may only have one primary organization.
+                          type: boolean
+                        symbol:
+                          description: Text string symbol of the organization. For
+                            example, the text symbol for Google is GOOG.
+                          type: string
+                        title:
+                          description: The user's title within the organization. For
+                            example, member or engineer.
+                          type: string
+                        type:
+                          description: 'The type of organization. Acceptable values:
+                            `domain_only`, `school`, `unknown`, `work`.'
+                          type: string
+                      type: object
+                    type: array
+                  phones:
+                    description: A list of the user's phone numbers. The maximum allowed
+                      data size is 1Kb.
+                    items:
+                      properties:
+                        customType:
+                          description: If the phone number type is custom, this property
+                            contains the custom value and must be set.
+                          type: string
+                        primary:
+                          description: Indicates if this is the user's primary phone
+                            number. A user may only have one primary phone number.
+                          type: boolean
+                        type:
+                          description: 'The type of phone number. Acceptable values:
+                            `assistant`, `callback`, `car`, `company_main` , `custom`,
+                            `grand_central`, `home`, `home_fax`, `isdn`, `main`, `mobile`,
+                            `other`, `other_fax`, `pager`, `radio`, `telex`, `tty_tdd`,
+                            `work`, `work_fax`, `work_mobile`, `work_pager`.'
+                          type: string
+                        value:
+                          description: A human-readable phone number. It may be in
+                            any telephone number format.
+                          type: string
+                      type: object
+                    type: array
+                  posixAccounts:
+                    description: A list of POSIX account information for the user.
+                    items:
+                      properties:
+                        accountId:
+                          description: A POSIX account field identifier.
+                          type: string
+                        gecos:
+                          description: The GECOS (user information) for this account.
+                          type: string
+                        gid:
+                          description: The default group ID.
+                          type: string
+                        homeDirectory:
+                          description: The path to the home directory for this account.
+                          type: string
+                        operatingSystemType:
+                          description: 'The operating system type for this account.
+                            Acceptable values: `linux`, `unspecified`, `windows`.'
+                          type: string
+                        primary:
+                          description: If this is user's primary account within the
+                            SystemId.
+                          type: boolean
+                        shell:
+                          description: The path to the login shell for this account.
+                          type: string
+                        systemId:
+                          description: System identifier for which account Username
+                            or Uid apply to.
+                          type: string
+                        uid:
+                          description: The POSIX compliant user ID.
+                          type: string
+                        username:
+                          description: The username of the account.
+                          type: string
+                      type: object
+                    type: array
+                  primaryEmail:
+                    description: The user's primary email address. The primaryEmail
+                      must be unique and cannot be an alias of another user.
+                    type: string
+                  recoveryEmail:
+                    description: Recovery email of the user.
+                    type: string
+                  recoveryPhone:
+                    description: 'Recovery phone of the user. The phone number must
+                      be in the E.164 format, starting with the plus sign (+). Example:
+                      +16506661212.'
+                    type: string
+                  relations:
+                    description: A list of the user's relationships to other users.
+                      The maximum allowed data size for this field is 2Kb.
+                    items:
+                      properties:
+                        customType:
+                          description: If the value of type is custom, this property
+                            contains the custom type string.
+                          type: string
+                        type:
+                          description: 'The type of relation. Acceptable values: `admin_assistant`,
+                            `assistant`, `brother`, `child`, `custom`, `domestic_partner`,
+                            `dotted_line_manager`, `exec_assistant`, `father`, `friend`,
+                            `manager`, `mother`, `parent`, `partner`, `referred_by`,
+                            `relative`, `sister`, `spouse`.'
+                          type: string
+                        value:
+                          description: The name of the person the user is related
+                            to.
+                          type: string
+                      type: object
+                    type: array
+                  sshPublicKeys:
+                    description: A list of SSH public keys. The maximum allowed data
+                      size is 10Kb.
+                    items:
+                      properties:
+                        expirationTimeUsec:
+                          description: An expiration time in microseconds since epoch.
+                          type: string
+                        fingerprint:
+                          description: A SHA-256 fingerprint of the SSH public key.
+                          type: string
+                        key:
+                          description: An SSH public key.
+                          type: string
+                      type: object
+                    type: array
+                  suspended:
+                    description: Indicates if user is suspended.
+                    type: boolean
+                  suspensionReason:
+                    description: Has the reason a user account is suspended either
+                      by the administrator or by Google at the time of suspension.
+                      The property is returned only if the suspended property is true.
+                    type: string
+                  thumbnailPhotoEtag:
+                    description: ETag of the user's photo
+                    type: string
+                  thumbnailPhotoUrl:
+                    description: Photo Url of the user.
+                    type: string
+                  websites:
+                    description: A list of the user's websites. The maximum allowed
+                      data size is 2Kb.
+                    items:
+                      properties:
+                        customType:
+                          description: The custom type. Only used if the type is custom.
+                          type: string
+                        primary:
+                          description: If this is user's primary website or not.
+                          type: boolean
+                        type:
+                          description: 'The type or purpose of the website. For example,
+                            a website could be labeled as home or blog. Alternatively,
+                            an entry can have a custom type Custom types must have
+                            a customType value. Acceptable values: `app_install_page`,
+                            `blog`, `custom`, `ftp` , `home`, `home_page`, `other`,
+                            `profile`, `reservations`, `resume`, `work`.'
+                          type: string
+                        value:
+                          description: The URL of the website.
+                          type: string
+                      type: object
+                    type: array
+                type: object
+              conditions:
+                description: Conditions of the resource.
+                items:
+                  description: A Condition that may apply to a resource.
+                  properties:
+                    lastTransitionTime:
+                      description: LastTransitionTime is the last time this condition
+                        transitioned from one status to another.
+                      format: date-time
+                      type: string
+                    message:
+                      description: A Message containing details about this condition's
+                        last transition from one status to another, if any.
+                      type: string
+                    reason:
+                      description: A Reason for this condition's last transition from
+                        one status to another.
+                      type: string
+                    status:
+                      description: Status of this condition; is it currently True,
+                        False, or Unknown?
+                      type: string
+                    type:
+                      description: Type of this condition. At most one of each condition
+                        type may apply to a resource at any point in time.
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

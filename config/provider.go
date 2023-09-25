@@ -10,7 +10,8 @@ import (
 
 	ujconfig "github.com/upbound/upjet/pkg/config"
 
-	"github.com/alanraison/provider-googleworkspace/config/group"
+	"github.com/alanraison/provider-googleworkspace/config/apps/groups"
+	"github.com/alanraison/provider-googleworkspace/config/directory"
 )
 
 const (
@@ -35,7 +36,8 @@ func GetProvider() *ujconfig.Provider {
 
 	for _, configure := range []func(provider *ujconfig.Provider){
 		// add custom config functions
-		group.Configure,
+		directory.Configure,
+		groups.Configure,
 	} {
 		configure(pc)
 	}
