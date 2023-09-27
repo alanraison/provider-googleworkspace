@@ -80,25 +80,29 @@ func TerraformSetupBuilder(version, providerSource, providerVersion string) terr
 			if err := json.Unmarshal(data, &creds); err != nil {
 				return ps, errors.Wrap(err, errUnmarshalCredentials)
 			}
-			// Set credentials in Terraform provider configuration.
-			if v, ok := creds[accessToken]; ok {
-				ps.Configuration[accessToken] = v
-			}
-			if v, ok := creds[credentials]; ok {
-				ps.Configuration[credentials] = v
-			}
-			if v, ok := creds[impersonatedUserEmail]; ok {
-				ps.Configuration[impersonatedUserEmail] = v
-			}
-			if v, ok := creds[oauthScopes]; ok {
-				ps.Configuration[oauthScopes] = v
-			}
-			if v, ok := creds[serviceAccount]; ok {
-				ps.Configuration[serviceAccount] = v
-			}
+			extractCredentials(creds, ps.Configuration)
 		}
 		ps.Configuration[customerID] = pc.Spec.CustomerID
 
 		return ps, nil
+	}
+}
+
+func extractCredentials(creds map[string]string, config map[string]any) {
+	// Set credentials in Terraform provider configuration.
+	if v, ok := creds[accessToken]; ok {
+		config[accessToken] = v
+	}
+	if v, ok := creds[credentials]; ok {
+		config[credentials] = v
+	}
+	if v, ok := creds[impersonatedUserEmail]; ok {
+		config[impersonatedUserEmail] = v
+	}
+	if v, ok := creds[oauthScopes]; ok {
+		config[oauthScopes] = v
+	}
+	if v, ok := creds[serviceAccount]; ok {
+		config[serviceAccount] = v
 	}
 }

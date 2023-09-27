@@ -12,8 +12,60 @@ import (
 	client "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-// ResolveReferences of this Assignment.
-func (mg *Assignment) ResolveReferences(ctx context.Context, c client.Reader) error {
+// ResolveReferences of this GroupMember.
+func (mg *GroupMember) ResolveReferences(ctx context.Context, c client.Reader) error {
+	r := reference.NewAPIResolver(c, mg)
+
+	var rsp reference.ResolutionResponse
+	var err error
+
+	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
+		CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.GroupID),
+		Extract:      reference.ExternalName(),
+		Reference:    mg.Spec.ForProvider.GroupRef,
+		Selector:     mg.Spec.ForProvider.GroupSelector,
+		To: reference.To{
+			List:    &GroupList{},
+			Managed: &Group{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.ForProvider.GroupID")
+	}
+	mg.Spec.ForProvider.GroupID = reference.ToPtrValue(rsp.ResolvedValue)
+	mg.Spec.ForProvider.GroupRef = rsp.ResolvedReference
+
+	return nil
+}
+
+// ResolveReferences of this GroupMembers.
+func (mg *GroupMembers) ResolveReferences(ctx context.Context, c client.Reader) error {
+	r := reference.NewAPIResolver(c, mg)
+
+	var rsp reference.ResolutionResponse
+	var err error
+
+	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
+		CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.GroupID),
+		Extract:      reference.ExternalName(),
+		Reference:    mg.Spec.ForProvider.GroupRef,
+		Selector:     mg.Spec.ForProvider.GroupSelector,
+		To: reference.To{
+			List:    &GroupList{},
+			Managed: &Group{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.ForProvider.GroupID")
+	}
+	mg.Spec.ForProvider.GroupID = reference.ToPtrValue(rsp.ResolvedValue)
+	mg.Spec.ForProvider.GroupRef = rsp.ResolvedReference
+
+	return nil
+}
+
+// ResolveReferences of this RoleAssignment.
+func (mg *RoleAssignment) ResolveReferences(ctx context.Context, c client.Reader) error {
 	r := reference.NewAPIResolver(c, mg)
 
 	var rsp reference.ResolutionResponse
@@ -22,8 +74,8 @@ func (mg *Assignment) ResolveReferences(ctx context.Context, c client.Reader) er
 	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
 		CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.AssignedTo),
 		Extract:      reference.ExternalName(),
-		Reference:    mg.Spec.ForProvider.AssignedToRef,
-		Selector:     mg.Spec.ForProvider.AssignedToSelector,
+		Reference:    mg.Spec.ForProvider.UserRef,
+		Selector:     mg.Spec.ForProvider.UserSelector,
 		To: reference.To{
 			List:    &UserList{},
 			Managed: &User{},
@@ -33,13 +85,13 @@ func (mg *Assignment) ResolveReferences(ctx context.Context, c client.Reader) er
 		return errors.Wrap(err, "mg.Spec.ForProvider.AssignedTo")
 	}
 	mg.Spec.ForProvider.AssignedTo = reference.ToPtrValue(rsp.ResolvedValue)
-	mg.Spec.ForProvider.AssignedToRef = rsp.ResolvedReference
+	mg.Spec.ForProvider.UserRef = rsp.ResolvedReference
 
 	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
 		CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.OrgUnitID),
 		Extract:      reference.ExternalName(),
-		Reference:    mg.Spec.ForProvider.OrgUnitIDRef,
-		Selector:     mg.Spec.ForProvider.OrgUnitIDSelector,
+		Reference:    mg.Spec.ForProvider.OrgUnitRef,
+		Selector:     mg.Spec.ForProvider.OrgUnitSelector,
 		To: reference.To{
 			List:    &OrgUnitList{},
 			Managed: &OrgUnit{},
@@ -49,13 +101,13 @@ func (mg *Assignment) ResolveReferences(ctx context.Context, c client.Reader) er
 		return errors.Wrap(err, "mg.Spec.ForProvider.OrgUnitID")
 	}
 	mg.Spec.ForProvider.OrgUnitID = reference.ToPtrValue(rsp.ResolvedValue)
-	mg.Spec.ForProvider.OrgUnitIDRef = rsp.ResolvedReference
+	mg.Spec.ForProvider.OrgUnitRef = rsp.ResolvedReference
 
 	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
 		CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.RoleID),
 		Extract:      reference.ExternalName(),
-		Reference:    mg.Spec.ForProvider.RoleIDRef,
-		Selector:     mg.Spec.ForProvider.RoleIDSelector,
+		Reference:    mg.Spec.ForProvider.RoleRef,
+		Selector:     mg.Spec.ForProvider.RoleSelector,
 		To: reference.To{
 			List:    &RoleList{},
 			Managed: &Role{},
@@ -65,59 +117,7 @@ func (mg *Assignment) ResolveReferences(ctx context.Context, c client.Reader) er
 		return errors.Wrap(err, "mg.Spec.ForProvider.RoleID")
 	}
 	mg.Spec.ForProvider.RoleID = reference.ToPtrValue(rsp.ResolvedValue)
-	mg.Spec.ForProvider.RoleIDRef = rsp.ResolvedReference
-
-	return nil
-}
-
-// ResolveReferences of this Member.
-func (mg *Member) ResolveReferences(ctx context.Context, c client.Reader) error {
-	r := reference.NewAPIResolver(c, mg)
-
-	var rsp reference.ResolutionResponse
-	var err error
-
-	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
-		CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.GroupID),
-		Extract:      reference.ExternalName(),
-		Reference:    mg.Spec.ForProvider.GroupIDRef,
-		Selector:     mg.Spec.ForProvider.GroupIDSelector,
-		To: reference.To{
-			List:    &GroupList{},
-			Managed: &Group{},
-		},
-	})
-	if err != nil {
-		return errors.Wrap(err, "mg.Spec.ForProvider.GroupID")
-	}
-	mg.Spec.ForProvider.GroupID = reference.ToPtrValue(rsp.ResolvedValue)
-	mg.Spec.ForProvider.GroupIDRef = rsp.ResolvedReference
-
-	return nil
-}
-
-// ResolveReferences of this Members.
-func (mg *Members) ResolveReferences(ctx context.Context, c client.Reader) error {
-	r := reference.NewAPIResolver(c, mg)
-
-	var rsp reference.ResolutionResponse
-	var err error
-
-	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
-		CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.GroupID),
-		Extract:      reference.ExternalName(),
-		Reference:    mg.Spec.ForProvider.GroupIDRef,
-		Selector:     mg.Spec.ForProvider.GroupIDSelector,
-		To: reference.To{
-			List:    &GroupList{},
-			Managed: &Group{},
-		},
-	})
-	if err != nil {
-		return errors.Wrap(err, "mg.Spec.ForProvider.GroupID")
-	}
-	mg.Spec.ForProvider.GroupID = reference.ToPtrValue(rsp.ResolvedValue)
-	mg.Spec.ForProvider.GroupIDRef = rsp.ResolvedReference
+	mg.Spec.ForProvider.RoleRef = rsp.ResolvedReference
 
 	return nil
 }
@@ -133,8 +133,8 @@ func (mg *User) ResolveReferences(ctx context.Context, c client.Reader) error {
 		rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
 			CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.CustomSchemas[i3].SchemaName),
 			Extract:      reference.ExternalName(),
-			Reference:    mg.Spec.ForProvider.CustomSchemas[i3].SchemaNameRef,
-			Selector:     mg.Spec.ForProvider.CustomSchemas[i3].SchemaNameSelector,
+			Reference:    mg.Spec.ForProvider.CustomSchemas[i3].SchemaRef,
+			Selector:     mg.Spec.ForProvider.CustomSchemas[i3].SchemaSelector,
 			To: reference.To{
 				List:    &SchemaList{},
 				Managed: &Schema{},
@@ -144,7 +144,7 @@ func (mg *User) ResolveReferences(ctx context.Context, c client.Reader) error {
 			return errors.Wrap(err, "mg.Spec.ForProvider.CustomSchemas[i3].SchemaName")
 		}
 		mg.Spec.ForProvider.CustomSchemas[i3].SchemaName = reference.ToPtrValue(rsp.ResolvedValue)
-		mg.Spec.ForProvider.CustomSchemas[i3].SchemaNameRef = rsp.ResolvedReference
+		mg.Spec.ForProvider.CustomSchemas[i3].SchemaRef = rsp.ResolvedReference
 
 	}
 

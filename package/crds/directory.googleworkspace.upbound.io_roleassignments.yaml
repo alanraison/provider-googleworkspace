@@ -5,7 +5,7 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.11.3
   creationTimestamp: null
-  name: assignments.directory.googleworkspace.upbound.io
+  name: roleassignments.directory.googleworkspace.upbound.io
 spec:
   group: directory.googleworkspace.upbound.io
   names:
@@ -13,10 +13,10 @@ spec:
     - crossplane
     - managed
     - googleworkspace
-    kind: Assignment
-    listKind: AssignmentList
-    plural: assignments
-    singular: assignment
+    kind: RoleAssignment
+    listKind: RoleAssignmentList
+    plural: roleassignments
+    singular: roleassignment
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -35,7 +35,8 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Assignment is the Schema for the Assignments API. <no value>
+        description: RoleAssignment is the Schema for the RoleAssignments API. <no
+          value>
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -50,7 +51,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: AssignmentSpec defines the desired state of Assignment
+            description: RoleAssignmentSpec defines the desired state of RoleAssignment
             properties:
               deletionPolicy:
                 default: Delete
@@ -70,85 +71,12 @@ spec:
                   assignedTo:
                     description: The unique ID of the user this role is assigned to.
                     type: string
-                  assignedToRef:
-                    description: Reference to a User to populate assignedTo.
-                    properties:
-                      name:
-                        description: Name of the referenced object.
-                        type: string
-                      policy:
-                        description: Policies for referencing.
-                        properties:
-                          resolution:
-                            default: Required
-                            description: Resolution specifies whether resolution of
-                              this reference is required. The default is 'Required',
-                              which means the reconcile will fail if the reference
-                              cannot be resolved. 'Optional' means this reference
-                              will be a no-op if it cannot be resolved.
-                            enum:
-                            - Required
-                            - Optional
-                            type: string
-                          resolve:
-                            description: Resolve specifies when this reference should
-                              be resolved. The default is 'IfNotPresent', which will
-                              attempt to resolve the reference only when the corresponding
-                              field is not present. Use 'Always' to resolve the reference
-                              on every reconcile.
-                            enum:
-                            - Always
-                            - IfNotPresent
-                            type: string
-                        type: object
-                    required:
-                    - name
-                    type: object
-                  assignedToSelector:
-                    description: Selector for a User to populate assignedTo.
-                    properties:
-                      matchControllerRef:
-                        description: MatchControllerRef ensures an object with the
-                          same controller reference as the selecting object is selected.
-                        type: boolean
-                      matchLabels:
-                        additionalProperties:
-                          type: string
-                        description: MatchLabels ensures an object with matching labels
-                          is selected.
-                        type: object
-                      policy:
-                        description: Policies for selection.
-                        properties:
-                          resolution:
-                            default: Required
-                            description: Resolution specifies whether resolution of
-                              this reference is required. The default is 'Required',
-                              which means the reconcile will fail if the reference
-                              cannot be resolved. 'Optional' means this reference
-                              will be a no-op if it cannot be resolved.
-                            enum:
-                            - Required
-                            - Optional
-                            type: string
-                          resolve:
-                            description: Resolve specifies when this reference should
-                              be resolved. The default is 'IfNotPresent', which will
-                              attempt to resolve the reference only when the corresponding
-                              field is not present. Use 'Always' to resolve the reference
-                              on every reconcile.
-                            enum:
-                            - Always
-                            - IfNotPresent
-                            type: string
-                        type: object
-                    type: object
                   orgUnitId:
                     description: If the role is restricted to an organization unit,
                       this contains the ID for the organization unit the exercise
                       of this role is restricted to.
                     type: string
-                  orgUnitIdRef:
+                  orgUnitRef:
                     description: Reference to a OrgUnit to populate orgUnitId.
                     properties:
                       name:
@@ -182,7 +110,7 @@ spec:
                     required:
                     - name
                     type: object
-                  orgUnitIdSelector:
+                  orgUnitSelector:
                     description: Selector for a OrgUnit to populate orgUnitId.
                     properties:
                       matchControllerRef:
@@ -224,7 +152,7 @@ spec:
                   roleId:
                     description: The ID of the role that is assigned.
                     type: string
-                  roleIdRef:
+                  roleRef:
                     description: Reference to a Role to populate roleId.
                     properties:
                       name:
@@ -258,7 +186,7 @@ spec:
                     required:
                     - name
                     type: object
-                  roleIdSelector:
+                  roleSelector:
                     description: Selector for a Role to populate roleId.
                     properties:
                       matchControllerRef:
@@ -301,6 +229,79 @@ spec:
                     description: 'Defaults to `CUSTOMER`. The scope in which this
                       role is assigned. Valid values are : - `CUSTOMER` - `ORG_UNIT`'
                     type: string
+                  userRef:
+                    description: Reference to a User to populate assignedTo.
+                    properties:
+                      name:
+                        description: Name of the referenced object.
+                        type: string
+                      policy:
+                        description: Policies for referencing.
+                        properties:
+                          resolution:
+                            default: Required
+                            description: Resolution specifies whether resolution of
+                              this reference is required. The default is 'Required',
+                              which means the reconcile will fail if the reference
+                              cannot be resolved. 'Optional' means this reference
+                              will be a no-op if it cannot be resolved.
+                            enum:
+                            - Required
+                            - Optional
+                            type: string
+                          resolve:
+                            description: Resolve specifies when this reference should
+                              be resolved. The default is 'IfNotPresent', which will
+                              attempt to resolve the reference only when the corresponding
+                              field is not present. Use 'Always' to resolve the reference
+                              on every reconcile.
+                            enum:
+                            - Always
+                            - IfNotPresent
+                            type: string
+                        type: object
+                    required:
+                    - name
+                    type: object
+                  userSelector:
+                    description: Selector for a User to populate assignedTo.
+                    properties:
+                      matchControllerRef:
+                        description: MatchControllerRef ensures an object with the
+                          same controller reference as the selecting object is selected.
+                        type: boolean
+                      matchLabels:
+                        additionalProperties:
+                          type: string
+                        description: MatchLabels ensures an object with matching labels
+                          is selected.
+                        type: object
+                      policy:
+                        description: Policies for selection.
+                        properties:
+                          resolution:
+                            default: Required
+                            description: Resolution specifies whether resolution of
+                              this reference is required. The default is 'Required',
+                              which means the reconcile will fail if the reference
+                              cannot be resolved. 'Optional' means this reference
+                              will be a no-op if it cannot be resolved.
+                            enum:
+                            - Required
+                            - Optional
+                            type: string
+                          resolve:
+                            description: Resolve specifies when this reference should
+                              be resolved. The default is 'IfNotPresent', which will
+                              attempt to resolve the reference only when the corresponding
+                              field is not present. Use 'Always' to resolve the reference
+                              on every reconcile.
+                            enum:
+                            - Always
+                            - IfNotPresent
+                            type: string
+                        type: object
+                    type: object
                 type: object
               managementPolicy:
                 default: FullControl
@@ -489,7 +490,7 @@ spec:
             - forProvider
             type: object
           status:
-            description: AssignmentStatus defines the observed state of Assignment.
+            description: RoleAssignmentStatus defines the observed state of RoleAssignment.
             properties:
               atProvider:
                 properties:

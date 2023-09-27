@@ -7,17 +7,8 @@ package v1alpha1
 
 import resource "github.com/crossplane/crossplane-runtime/pkg/resource"
 
-// GetItems of this AliasList.
-func (l *AliasList) GetItems() []resource.Managed {
-	items := make([]resource.Managed, len(l.Items))
-	for i := range l.Items {
-		items[i] = &l.Items[i]
-	}
-	return items
-}
-
-// GetItems of this AssignmentList.
-func (l *AssignmentList) GetItems() []resource.Managed {
+// GetItems of this DomainAliasList.
+func (l *DomainAliasList) GetItems() []resource.Managed {
 	items := make([]resource.Managed, len(l.Items))
 	for i := range l.Items {
 		items[i] = &l.Items[i]
@@ -43,8 +34,8 @@ func (l *GroupList) GetItems() []resource.Managed {
 	return items
 }
 
-// GetItems of this MemberList.
-func (l *MemberList) GetItems() []resource.Managed {
+// GetItems of this GroupMemberList.
+func (l *GroupMemberList) GetItems() []resource.Managed {
 	items := make([]resource.Managed, len(l.Items))
 	for i := range l.Items {
 		items[i] = &l.Items[i]
@@ -52,8 +43,8 @@ func (l *MemberList) GetItems() []resource.Managed {
 	return items
 }
 
-// GetItems of this MembersList.
-func (l *MembersList) GetItems() []resource.Managed {
+// GetItems of this GroupMembersList.
+func (l *GroupMembersList) GetItems() []resource.Managed {
 	items := make([]resource.Managed, len(l.Items))
 	for i := range l.Items {
 		items[i] = &l.Items[i]
@@ -63,6 +54,15 @@ func (l *MembersList) GetItems() []resource.Managed {
 
 // GetItems of this OrgUnitList.
 func (l *OrgUnitList) GetItems() []resource.Managed {
+	items := make([]resource.Managed, len(l.Items))
+	for i := range l.Items {
+		items[i] = &l.Items[i]
+	}
+	return items
+}
+
+// GetItems of this RoleAssignmentList.
+func (l *RoleAssignmentList) GetItems() []resource.Managed {
 	items := make([]resource.Managed, len(l.Items))
 	for i := range l.Items {
 		items[i] = &l.Items[i]

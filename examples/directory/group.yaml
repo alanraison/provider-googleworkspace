@@ -1,4 +1,4 @@
-apiVersion: group.googleworkspace.upbound.io/v1alpha1
+apiVersion: directory.googleworkspace.upbound.io/v1alpha1
 kind: Group
 metadata:
   name: my-example-group

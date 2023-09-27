@@ -123,16 +123,18 @@ type CustomSchemasParameters struct {
 
 	// The name of the schema.
 	// +crossplane:generate:reference:type=Schema
+	// +crossplane:generate:reference:refFieldName=SchemaRef
+	// +crossplane:generate:reference:selectorFieldName=SchemaSelector
 	// +kubebuilder:validation:Optional
 	SchemaName *string `json:"schemaName,omitempty" tf:"schema_name,omitempty"`
 
 	// Reference to a Schema to populate schemaName.
 	// +kubebuilder:validation:Optional
-	SchemaNameRef *v1.Reference `json:"schemaNameRef,omitempty" tf:"-"`
+	SchemaRef *v1.Reference `json:"schemaRef,omitempty" tf:"-"`
 
 	// Selector for a Schema to populate schemaName.
 	// +kubebuilder:validation:Optional
-	SchemaNameSelector *v1.Selector `json:"schemaNameSelector,omitempty" tf:"-"`
+	SchemaSelector *v1.Selector `json:"schemaSelector,omitempty" tf:"-"`
 
 	// JSON encoded map that represents key/value pairs that correspond to the given schema.
 	// +kubebuilder:validation:Required

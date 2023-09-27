@@ -39,6 +39,9 @@ type SettingsObservation struct {
 	// Description of the group. The maximum group description is no more than 300 characters.
 	Description *string `json:"description,omitempty" tf:"description,omitempty"`
 
+	// The group's email address.
+	Email *string `json:"email,omitempty" tf:"email,omitempty"`
+
 	// Defaults to `false`. Specifies whether a collaborative inbox will remain turned on for the group.
 	EnableCollaborativeInbox *bool `json:"enableCollaborativeInbox,omitempty" tf:"enable_collaborative_inbox,omitempty"`
 
@@ -190,9 +193,24 @@ type SettingsParameters struct {
 	// +kubebuilder:validation:Optional
 	DefaultMessageDenyNotificationText *string `json:"defaultMessageDenyNotificationText,omitempty" tf:"default_message_deny_notification_text,omitempty"`
 
+	// The group's email address.
+	// +crossplane:generate:reference:type=github.com/alanraison/provider-googleworkspace/apis/directory/v1alpha1.Group
+	// +crossplane:generate:reference:refFieldName=GroupRef
+	// +crossplane:generate:reference:selectorFieldName=GroupSelector
+	// +kubebuilder:validation:Optional
+	Email *string `json:"email,omitempty" tf:"email,omitempty"`
+
 	// Defaults to `false`. Specifies whether a collaborative inbox will remain turned on for the group.
 	// +kubebuilder:validation:Optional
 	EnableCollaborativeInbox *bool `json:"enableCollaborativeInbox,omitempty" tf:"enable_collaborative_inbox,omitempty"`
+
+	// Reference to a Group in directory to populate email.
+	// +kubebuilder:validation:Optional
+	GroupRef *v1.Reference `json:"groupRef,omitempty" tf:"-"`
+
+	// Selector for a Group in directory to populate email.
+	// +kubebuilder:validation:Optional
+	GroupSelector *v1.Selector `json:"groupSelector,omitempty" tf:"-"`
 
 	// Defaults to `false`. Whether to include custom footer.
 	// +kubebuilder:validation:Optional

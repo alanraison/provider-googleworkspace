@@ -13,7 +13,7 @@ import (
 	v1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 )
 
-type MembersMembersObservation struct {
+type GroupMemberObservation struct {
 
 	// Defaults to `ALL_MAIL`. Defines mail delivery preferences of member. Acceptable values are:
 	// - `ALL_MAIL`: All messages, delivered as soon as they arrive.
@@ -23,11 +23,19 @@ type MembersMembersObservation struct {
 	// - `NONE`: No messages.
 	DeliverySettings *string `json:"deliverySettings,omitempty" tf:"delivery_settings,omitempty"`
 
-	// The member's email address. A member can be a user or another group. This property isrequired when adding a member to a group. The email must be unique and cannot be an alias of another group. If the email address is changed, the API automatically reflects the email address changes.
+	// The member's email address. A member can be a user or another group. This property is required when adding a member to a group. The email must be unique and cannot be an alias of another group. If the email address is changed, the API automatically reflects the email address changes.
 	Email *string `json:"email,omitempty" tf:"email,omitempty"`
 
-	// The unique ID of the group member. A member id can be used as a member request URI's memberKey.
+	// ETag of the resource.
+	Etag *string `json:"etag,omitempty" tf:"etag,omitempty"`
+
+	// Identifies the group in the API request. The value can be the group's email address, group alias, or the unique group ID.
+	GroupID *string `json:"groupId,omitempty" tf:"group_id,omitempty"`
+
 	ID *string `json:"id,omitempty" tf:"id,omitempty"`
+
+	// The unique ID of the group member. A member id can be used as a member request URI's memberKey.
+	MemberID *string `json:"memberId,omitempty" tf:"member_id,omitempty"`
 
 	// Defaults to `MEMBER`. The member's role in a group. The API returns an error for cycles in group memberships. For example, if group1 is a member of group2, group2 cannot be a member of group1. Acceptable values are:
 	// - `MANAGER`: This role is only available if the Google Groups for Business is enabled using the Admin Console. A `MANAGER` role can do everything done by an `OWNER` role except make a member an `OWNER` or delete the group. A group can have multiple `MANAGER` members.
@@ -45,7 +53,7 @@ type MembersMembersObservation struct {
 	Type *string `json:"type,omitempty" tf:"type,omitempty"`
 }
 
-type MembersMembersParameters struct {
+type GroupMemberParameters struct {
 
 	// Defaults to `ALL_MAIL`. Defines mail delivery preferences of member. Acceptable values are:
 	// - `ALL_MAIL`: All messages, delivered as soon as they arrive.
@@ -56,9 +64,24 @@ type MembersMembersParameters struct {
 	// +kubebuilder:validation:Optional
 	DeliverySettings *string `json:"deliverySettings,omitempty" tf:"delivery_settings,omitempty"`
 
-	// The member's email address. A member can be a user or another group. This property isrequired when adding a member to a group. The email must be unique and cannot be an alias of another group. If the email address is changed, the API automatically reflects the email address changes.
-	// +kubebuilder:validation:Required
-	Email *string `json:"email" tf:"email,omitempty"`
+	// The member's email address. A member can be a user or another group. This property is required when adding a member to a group. The email must be unique and cannot be an alias of another group. If the email address is changed, the API automatically reflects the email address changes.
+	// +kubebuilder:validation:Optional
+	Email *string `json:"email,omitempty" tf:"email,omitempty"`
+
+	// Identifies the group in the API request. The value can be the group's email address, group alias, or the unique group ID.
+	// +crossplane:generate:reference:type=Group
+	// +crossplane:generate:reference:refFieldName=GroupRef
+	// +crossplane:generate:reference:selectorFieldName=GroupSelector
+	// +kubebuilder:validation:Optional
+	GroupID *string `json:"groupId,omitempty" tf:"group_id,omitempty"`
+
+	// Reference to a Group to populate groupId.
+	// +kubebuilder:validation:Optional
+	GroupRef *v1.Reference `json:"groupRef,omitempty" tf:"-"`
+
+	// Selector for a Group to populate groupId.
+	// +kubebuilder:validation:Optional
+	GroupSelector *v1.Selector `json:"groupSelector,omitempty" tf:"-"`
 
 	// Defaults to `MEMBER`. The member's role in a group. The API returns an error for cycles in group memberships. For example, if group1 is a member of group2, group2 cannot be a member of group1. Acceptable values are:
 	// - `MANAGER`: This role is only available if the Google Groups for Business is enabled using the Admin Console. A `MANAGER` role can do everything done by an `OWNER` role except make a member an `OWNER` or delete the group. A group can have multiple `MANAGER` members.
@@ -75,85 +98,52 @@ type MembersMembersParameters struct {
 	Type *string `json:"type,omitempty" tf:"type,omitempty"`
 }
 
-type MembersObservation struct {
-
-	// ETag of the resource.
-	Etag *string `json:"etag,omitempty" tf:"etag,omitempty"`
-
-	// Identifies the group in the API request. The value can be the group's email address, group alias, or the unique group ID.
-	GroupID *string `json:"groupId,omitempty" tf:"group_id,omitempty"`
-
-	ID *string `json:"id,omitempty" tf:"id,omitempty"`
-
-	// The members of the group
-	Members []MembersMembersObservation `json:"members,omitempty" tf:"members,omitempty"`
-}
-
-type MembersParameters struct {
-
-	// Identifies the group in the API request. The value can be the group's email address, group alias, or the unique group ID.
-	// +crossplane:generate:reference:type=Group
-	// +kubebuilder:validation:Optional
-	GroupID *string `json:"groupId,omitempty" tf:"group_id,omitempty"`
-
-	// Reference to a Group to populate groupId.
-	// +kubebuilder:validation:Optional
-	GroupIDRef *v1.Reference `json:"groupIdRef,omitempty" tf:"-"`
-
-	// Selector for a Group to populate groupId.
-	// +kubebuilder:validation:Optional
-	GroupIDSelector *v1.Selector `json:"groupIdSelector,omitempty" tf:"-"`
-
-	// The members of the group
-	// +kubebuilder:validation:Optional
-	Members []MembersMembersParameters `json:"members,omitempty" tf:"members,omitempty"`
-}
-
-// MembersSpec defines the desired state of Members
-type MembersSpec struct {
+// GroupMemberSpec defines the desired state of GroupMember
+type GroupMemberSpec struct {
 	v1.ResourceSpec `json:",inline"`
-	ForProvider     MembersParameters `json:"forProvider"`
+	ForProvider     GroupMemberParameters `json:"forProvider"`
 }
 
-// MembersStatus defines the observed state of Members.
-type MembersStatus struct {
+// GroupMemberStatus defines the observed state of GroupMember.
+type GroupMemberStatus struct {
 	v1.ResourceStatus `json:",inline"`
-	AtProvider        MembersObservation `json:"atProvider,omitempty"`
+	AtProvider        GroupMemberObservation `json:"atProvider,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
-// Members is the Schema for the Memberss API. <no value>
+// GroupMember is the Schema for the GroupMembers API. <no value>
 // +kubebuilder:printcolumn:name="READY",type="string",JSONPath=".status.conditions[?(@.type=='Ready')].status"
 // +kubebuilder:printcolumn:name="SYNCED",type="string",JSONPath=".status.conditions[?(@.type=='Synced')].status"
 // +kubebuilder:printcolumn:name="EXTERNAL-NAME",type="string",JSONPath=".metadata.annotations.crossplane\\.io/external-name"
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:scope=Cluster,categories={crossplane,managed,googleworkspace}
-type Members struct {
+type GroupMember struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              MembersSpec   `json:"spec"`
-	Status            MembersStatus `json:"status,omitempty"`
+	// +kubebuilder:validation:XValidation:rule="self.managementPolicy == 'ObserveOnly' || has(self.forProvider.email)",message="email is a required parameter"
+	Spec   GroupMemberSpec   `json:"spec"`
+	Status GroupMemberStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
-// MembersList contains a list of Memberss
-type MembersList struct {
+// GroupMemberList contains a list of GroupMembers
+type GroupMemberList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Members `json:"items"`
+	Items           []GroupMember `json:"items"`
 }
 
 // Repository type metadata.
 var (
-	Members_Kind             = "Members"
-	Members_GroupKind        = schema.GroupKind{Group: CRDGroup, Kind: Members_Kind}.String()
-	Members_KindAPIVersion   = Members_Kind + "." + CRDGroupVersion.String()
-	Members_GroupVersionKind = CRDGroupVersion.WithKind(Members_Kind)
+	GroupMember_Kind             = "GroupMember"
+	GroupMember_GroupKind        = schema.GroupKind{Group: CRDGroup, Kind: GroupMember_Kind}.String()
+	GroupMember_KindAPIVersion   = GroupMember_Kind + "." + CRDGroupVersion.String()
+	GroupMember_GroupVersionKind = CRDGroupVersion.WithKind(GroupMember_Kind)
 )
 
 func init() {
-	SchemeBuilder.Register(&Members{}, &MembersList{})
+	SchemeBuilder.Register(&GroupMember{}, &GroupMemberList{})
 }

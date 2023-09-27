@@ -5,7 +5,7 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.11.3
   creationTimestamp: null
-  name: members.directory.googleworkspace.upbound.io
+  name: domainaliases.directory.googleworkspace.upbound.io
 spec:
   group: directory.googleworkspace.upbound.io
   names:
@@ -13,10 +13,10 @@ spec:
     - crossplane
     - managed
     - googleworkspace
-    kind: Members
-    listKind: MembersList
-    plural: members
-    singular: members
+    kind: DomainAlias
+    listKind: DomainAliasList
+    plural: domainaliases
+    singular: domainalias
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -35,7 +35,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Members is the Schema for the Memberss API. <no value>
+        description: DomainAlias is the Schema for the DomainAliass API. <no value>
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -50,7 +50,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: MembersSpec defines the desired state of Members
+            description: DomainAliasSpec defines the desired state of DomainAlias
             properties:
               deletionPolicy:
                 default: Delete
@@ -67,132 +67,14 @@ spec:
                 type: string
               forProvider:
                 properties:
-                  groupId:
-                    description: Identifies the group in the API request. The value
-                      can be the group's email address, group alias, or the unique
-                      group ID.
+                  domainAliasName:
+                    description: The domain alias name.
                     type: string
-                  groupIdRef:
-                    description: Reference to a Group to populate groupId.
-                    properties:
-                      name:
-                        description: Name of the referenced object.
-                        type: string
-                      policy:
-                        description: Policies for referencing.
-                        properties:
-                          resolution:
-                            default: Required
-                            description: Resolution specifies whether resolution of
-                              this reference is required. The default is 'Required',
-                              which means the reconcile will fail if the reference
-                              cannot be resolved. 'Optional' means this reference
-                              will be a no-op if it cannot be resolved.
-                            enum:
-                            - Required
-                            - Optional
-                            type: string
-                          resolve:
-                            description: Resolve specifies when this reference should
-                              be resolved. The default is 'IfNotPresent', which will
-                              attempt to resolve the reference only when the corresponding
-                              field is not present. Use 'Always' to resolve the reference
-                              on every reconcile.
-                            enum:
-                            - Always
-                            - IfNotPresent
-                            type: string
-                        type: object
-                    required:
-                    - name
-                    type: object
-                  groupIdSelector:
-                    description: Selector for a Group to populate groupId.
-                    properties:
-                      matchControllerRef:
-                        description: MatchControllerRef ensures an object with the
-                          same controller reference as the selecting object is selected.
-                        type: boolean
-                      matchLabels:
-                        additionalProperties:
-                          type: string
-                        description: MatchLabels ensures an object with matching labels
-                          is selected.
-                        type: object
-                      policy:
-                        description: Policies for selection.
-                        properties:
-                          resolution:
-                            default: Required
-                            description: Resolution specifies whether resolution of
-                              this reference is required. The default is 'Required',
-                              which means the reconcile will fail if the reference
-                              cannot be resolved. 'Optional' means this reference
-                              will be a no-op if it cannot be resolved.
-                            enum:
-                            - Required
-                            - Optional
-                            type: string
-                          resolve:
-                            description: Resolve specifies when this reference should
-                              be resolved. The default is 'IfNotPresent', which will
-                              attempt to resolve the reference only when the corresponding
-                              field is not present. Use 'Always' to resolve the reference
-                              on every reconcile.
-                            enum:
-                            - Always
-                            - IfNotPresent
-                            type: string
-                        type: object
-                    type: object
-                  members:
-                    description: The members of the group
-                    items:
-                      properties:
-                        deliverySettings:
-                          description: 'Defaults to `ALL_MAIL`. Defines mail delivery
-                            preferences of member. Acceptable values are: - `ALL_MAIL`:
-                            All messages, delivered as soon as they arrive. - `DAILY`:
-                            No more than one message a day. - `DIGEST`: Up to 25 messages
-                            bundled into a single message. - `DISABLED`: Remove subscription.
-                            - `NONE`: No messages.'
-                          type: string
-                        email:
-                          description: The member's email address. A member can be
-                            a user or another group. This property isrequired when
-                            adding a member to a group. The email must be unique and
-                            cannot be an alias of another group. If the email address
-                            is changed, the API automatically reflects the email address
-                            changes.
-                          type: string
-                        role:
-                          description: 'Defaults to `MEMBER`. The member''s role in
-                            a group. The API returns an error for cycles in group
-                            memberships. For example, if group1 is a member of group2,
-                            group2 cannot be a member of group1. Acceptable values
-                            are: - `MANAGER`: This role is only available if the Google
-                            Groups for Business is enabled using the Admin Console.
-                            A `MANAGER` role can do everything done by an `OWNER`
-                            role except make a member an `OWNER` or delete the group.
-                            A group can have multiple `MANAGER` members. - `MEMBER`:
-                            This role can subscribe to a group, view discussion archives,
-                            and view the group''s membership list. - `OWNER`: This
-                            role can send messages to the group, add or remove members,
-                            change member roles, change group''s settings, and delete
-                            the group. An OWNER must be a member of the group. A group
-                            can have more than one OWNER.'
-                          type: string
-                        type:
-                          description: 'Defaults to `USER`. The type of group member.
-                            Acceptable values are: - `CUSTOMER`: The member represents
-                            all users in a domain. An email address is not returned
-                            and the ID returned is the customer ID. - `GROUP`: The
-                            member is another group. - `USER`: The member is a user.'
-                          type: string
-                      required:
-                      - email
-                      type: object
-                    type: array
+                  parentDomainName:
+                    description: The parent domain name that the domain alias is associated
+                      with. This can either be a primary or secondary domain name
+                      within a customer.
+                    type: string
                 type: object
               managementPolicy:
                 default: FullControl
@@ -380,74 +262,33 @@ spec:
             required:
             - forProvider
             type: object
+            x-kubernetes-validations:
+            - message: domainAliasName is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.domainAliasName)
           status:
-            description: MembersStatus defines the observed state of Members.
+            description: DomainAliasStatus defines the observed state of DomainAlias.
             properties:
               atProvider:
                 properties:
+                  creationTime:
+                    description: Creation time of the domain alias.
+                    type: number
+                  domainAliasName:
+                    description: The domain alias name.
+                    type: string
                   etag:
                     description: ETag of the resource.
                     type: string
-                  groupId:
-                    description: Identifies the group in the API request. The value
-                      can be the group's email address, group alias, or the unique
-                      group ID.
-                    type: string
                   id:
                     type: string
-                  members:
-                    description: The members of the group
-                    items:
-                      properties:
-                        deliverySettings:
-                          description: 'Defaults to `ALL_MAIL`. Defines mail delivery
-                            preferences of member. Acceptable values are: - `ALL_MAIL`:
-                            All messages, delivered as soon as they arrive. - `DAILY`:
-                            No more than one message a day. - `DIGEST`: Up to 25 messages
-                            bundled into a single message. - `DISABLED`: Remove subscription.
-                            - `NONE`: No messages.'
-                          type: string
-                        email:
-                          description: The member's email address. A member can be
-                            a user or another group. This property isrequired when
-                            adding a member to a group. The email must be unique and
-                            cannot be an alias of another group. If the email address
-                            is changed, the API automatically reflects the email address
-                            changes.
-                          type: string
-                        id:
-                          description: The unique ID of the group member. A member
-                            id can be used as a member request URI's memberKey.
-                          type: string
-                        role:
-                          description: 'Defaults to `MEMBER`. The member''s role in
-                            a group. The API returns an error for cycles in group
-                            memberships. For example, if group1 is a member of group2,
-                            group2 cannot be a member of group1. Acceptable values
-                            are: - `MANAGER`: This role is only available if the Google
-                            Groups for Business is enabled using the Admin Console.
-                            A `MANAGER` role can do everything done by an `OWNER`
-                            role except make a member an `OWNER` or delete the group.
-                            A group can have multiple `MANAGER` members. - `MEMBER`:
-                            This role can subscribe to a group, view discussion archives,
-                            and view the group''s membership list. - `OWNER`: This
-                            role can send messages to the group, add or remove members,
-                            change member roles, change group''s settings, and delete
-                            the group. An OWNER must be a member of the group. A group
-                            can have more than one OWNER.'
-                          type: string
-                        status:
-                          description: Status of member.
-                          type: string
-                        type:
-                          description: 'Defaults to `USER`. The type of group member.
-                            Acceptable values are: - `CUSTOMER`: The member represents
-                            all users in a domain. An email address is not returned
-                            and the ID returned is the customer ID. - `GROUP`: The
-                            member is another group. - `USER`: The member is a user.'
-                          type: string
-                      type: object
-                    type: array
+                  parentDomainName:
+                    description: The parent domain name that the domain alias is associated
+                      with. This can either be a primary or secondary domain name
+                      within a customer.
+                    type: string
+                  verified:
+                    description: Indicates the verification state of a domain alias.
+                    type: boolean
                 type: object
               conditions:
                 description: Conditions of the resource.

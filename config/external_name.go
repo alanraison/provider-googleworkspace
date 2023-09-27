@@ -10,12 +10,14 @@ import "github.com/upbound/upjet/pkg/config"
 // provider.
 var ExternalNameConfigs = map[string]config.ExternalName{
 	// Import requires using a randomly generated ID from provider: nl-2e21sda
+	"googleworkspace_chrome_policy":   config.IdentifierFromProvider,
 	"googleworkspace_domain":          config.ParameterAsIdentifier("domain_name"),
 	"googleworkspace_domain_alias":    config.IdentifierFromProvider,
+	"googleworkspace_gmail_alias":     config.IdentifierFromProvider,
 	"googleworkspace_group":           config.IdentifierFromProvider,
 	"googleworkspace_group_member":    config.IdentifierFromProvider,
 	"googleworkspace_group_members":   config.IdentifierFromProvider,
-	"googleworkspace_group_settings":  config.ParameterAsIdentifier("email"),
+	"googleworkspace_group_settings":  config.IdentifierFromProvider,
 	"googleworkspace_org_unit":        config.IdentifierFromProvider,
 	"googleworkspace_role":            config.IdentifierFromProvider,
 	"googleworkspace_role_assignment": config.IdentifierFromProvider,

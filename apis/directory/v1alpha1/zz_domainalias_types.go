@@ -13,7 +13,7 @@ import (
 	v1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 )
 
-type AliasObservation struct {
+type DomainAliasObservation struct {
 
 	// Creation time of the domain alias.
 	CreationTime *float64 `json:"creationTime,omitempty" tf:"creation_time,omitempty"`
@@ -33,7 +33,7 @@ type AliasObservation struct {
 	Verified *bool `json:"verified,omitempty" tf:"verified,omitempty"`
 }
 
-type AliasParameters struct {
+type DomainAliasParameters struct {
 
 	// The domain alias name.
 	// +kubebuilder:validation:Optional
@@ -44,52 +44,52 @@ type AliasParameters struct {
 	ParentDomainName *string `json:"parentDomainName,omitempty" tf:"parent_domain_name,omitempty"`
 }
 
-// AliasSpec defines the desired state of Alias
-type AliasSpec struct {
+// DomainAliasSpec defines the desired state of DomainAlias
+type DomainAliasSpec struct {
 	v1.ResourceSpec `json:",inline"`
-	ForProvider     AliasParameters `json:"forProvider"`
+	ForProvider     DomainAliasParameters `json:"forProvider"`
 }
 
-// AliasStatus defines the observed state of Alias.
-type AliasStatus struct {
+// DomainAliasStatus defines the observed state of DomainAlias.
+type DomainAliasStatus struct {
 	v1.ResourceStatus `json:",inline"`
-	AtProvider        AliasObservation `json:"atProvider,omitempty"`
+	AtProvider        DomainAliasObservation `json:"atProvider,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
-// Alias is the Schema for the Aliass API. <no value>
+// DomainAlias is the Schema for the DomainAliass API. <no value>
 // +kubebuilder:printcolumn:name="READY",type="string",JSONPath=".status.conditions[?(@.type=='Ready')].status"
 // +kubebuilder:printcolumn:name="SYNCED",type="string",JSONPath=".status.conditions[?(@.type=='Synced')].status"
 // +kubebuilder:printcolumn:name="EXTERNAL-NAME",type="string",JSONPath=".metadata.annotations.crossplane\\.io/external-name"
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:scope=Cluster,categories={crossplane,managed,googleworkspace}
-type Alias struct {
+type DomainAlias struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 	// +kubebuilder:validation:XValidation:rule="self.managementPolicy == 'ObserveOnly' || has(self.forProvider.domainAliasName)",message="domainAliasName is a required parameter"
-	Spec   AliasSpec   `json:"spec"`
-	Status AliasStatus `json:"status,omitempty"`
+	Spec   DomainAliasSpec   `json:"spec"`
+	Status DomainAliasStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
-// AliasList contains a list of Aliass
-type AliasList struct {
+// DomainAliasList contains a list of DomainAliass
+type DomainAliasList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Alias `json:"items"`
+	Items           []DomainAlias `json:"items"`
 }
 
 // Repository type metadata.
 var (
-	Alias_Kind             = "Alias"
-	Alias_GroupKind        = schema.GroupKind{Group: CRDGroup, Kind: Alias_Kind}.String()
-	Alias_KindAPIVersion   = Alias_Kind + "." + CRDGroupVersion.String()
-	Alias_GroupVersionKind = CRDGroupVersion.WithKind(Alias_Kind)
+	DomainAlias_Kind             = "DomainAlias"
+	DomainAlias_GroupKind        = schema.GroupKind{Group: CRDGroup, Kind: DomainAlias_Kind}.String()
+	DomainAlias_KindAPIVersion   = DomainAlias_Kind + "." + CRDGroupVersion.String()
+	DomainAlias_GroupVersionKind = CRDGroupVersion.WithKind(DomainAlias_Kind)
 )
 
 func init() {
-	SchemeBuilder.Register(&Alias{}, &AliasList{})
+	SchemeBuilder.Register(&DomainAlias{}, &DomainAliasList{})
 }

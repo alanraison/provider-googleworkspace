@@ -10,6 +10,7 @@ Copyright 2022 Upbound Inc.
 package v1alpha1
 
 import (
+	"github.com/crossplane/crossplane-runtime/apis/common/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 )
 
@@ -112,6 +113,11 @@ func (in *SettingsObservation) DeepCopyInto(out *SettingsObservation) {
 	}
 	if in.Description != nil {
 		in, out := &in.Description, &out.Description
+		*out = new(string)
+		**out = **in
+	}
+	if in.Email != nil {
+		in, out := &in.Email, &out.Email
 		*out = new(string)
 		**out = **in
 	}
@@ -270,10 +276,25 @@ func (in *SettingsParameters) DeepCopyInto(out *SettingsParameters) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.Email != nil {
+		in, out := &in.Email, &out.Email
+		*out = new(string)
+		**out = **in
+	}
 	if in.EnableCollaborativeInbox != nil {
 		in, out := &in.EnableCollaborativeInbox, &out.EnableCollaborativeInbox
 		*out = new(bool)
 		**out = **in
+	}
+	if in.GroupRef != nil {
+		in, out := &in.GroupRef, &out.GroupRef
+		*out = new(v1.Reference)
+		(*in).DeepCopyInto(*out)
+	}
+	if in.GroupSelector != nil {
+		in, out := &in.GroupSelector, &out.GroupSelector
+		*out = new(v1.Selector)
+		(*in).DeepCopyInto(*out)
 	}
 	if in.IncludeCustomFooter != nil {
 		in, out := &in.IncludeCustomFooter, &out.IncludeCustomFooter

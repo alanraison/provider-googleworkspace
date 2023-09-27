@@ -9,14 +9,15 @@ import (
 
 	"github.com/upbound/upjet/pkg/controller"
 
-	alias "github.com/alanraison/provider-googleworkspace/internal/controller/directory/alias"
-	assignment "github.com/alanraison/provider-googleworkspace/internal/controller/directory/assignment"
+	chromepolicy "github.com/alanraison/provider-googleworkspace/internal/controller/chrome/chromepolicy"
 	domain "github.com/alanraison/provider-googleworkspace/internal/controller/directory/domain"
+	domainalias "github.com/alanraison/provider-googleworkspace/internal/controller/directory/domainalias"
 	group "github.com/alanraison/provider-googleworkspace/internal/controller/directory/group"
-	member "github.com/alanraison/provider-googleworkspace/internal/controller/directory/member"
-	members "github.com/alanraison/provider-googleworkspace/internal/controller/directory/members"
+	groupmember "github.com/alanraison/provider-googleworkspace/internal/controller/directory/groupmember"
+	groupmembers "github.com/alanraison/provider-googleworkspace/internal/controller/directory/groupmembers"
 	orgunit "github.com/alanraison/provider-googleworkspace/internal/controller/directory/orgunit"
 	role "github.com/alanraison/provider-googleworkspace/internal/controller/directory/role"
+	roleassignment "github.com/alanraison/provider-googleworkspace/internal/controller/directory/roleassignment"
 	schema "github.com/alanraison/provider-googleworkspace/internal/controller/directory/schema"
 	user "github.com/alanraison/provider-googleworkspace/internal/controller/directory/user"
 	settings "github.com/alanraison/provider-googleworkspace/internal/controller/groups/settings"
@@ -27,14 +28,15 @@ import (
 // the supplied manager.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
-		alias.Setup,
-		assignment.Setup,
+		chromepolicy.Setup,
 		domain.Setup,
+		domainalias.Setup,
 		group.Setup,
-		member.Setup,
-		members.Setup,
+		groupmember.Setup,
+		groupmembers.Setup,
 		orgunit.Setup,
 		role.Setup,
+		roleassignment.Setup,
 		schema.Setup,
 		user.Setup,
 		settings.Setup,

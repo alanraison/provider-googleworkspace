@@ -13,7 +13,7 @@ import (
 	v1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 )
 
-type AssignmentObservation struct {
+type RoleAssignmentObservation struct {
 
 	// The unique ID of the user this role is assigned to.
 	AssignedTo *string `json:"assignedTo,omitempty" tf:"assigned_to,omitempty"`
@@ -35,99 +35,105 @@ type AssignmentObservation struct {
 	ScopeType *string `json:"scopeType,omitempty" tf:"scope_type,omitempty"`
 }
 
-type AssignmentParameters struct {
+type RoleAssignmentParameters struct {
 
 	// The unique ID of the user this role is assigned to.
 	// +crossplane:generate:reference:type=User
+	// +crossplane:generate:reference:refFieldName=UserRef
+	// +crossplane:generate:reference:selectorFieldName=UserSelector
 	// +kubebuilder:validation:Optional
 	AssignedTo *string `json:"assignedTo,omitempty" tf:"assigned_to,omitempty"`
 
-	// Reference to a User to populate assignedTo.
-	// +kubebuilder:validation:Optional
-	AssignedToRef *v1.Reference `json:"assignedToRef,omitempty" tf:"-"`
-
-	// Selector for a User to populate assignedTo.
-	// +kubebuilder:validation:Optional
-	AssignedToSelector *v1.Selector `json:"assignedToSelector,omitempty" tf:"-"`
-
 	// If the role is restricted to an organization unit, this contains the ID for the organization unit the exercise of this role is restricted to.
 	// +crossplane:generate:reference:type=OrgUnit
+	// +crossplane:generate:reference:refFieldName=OrgUnitRef
+	// +crossplane:generate:reference:selectorFieldName=OrgUnitSelector
 	// +kubebuilder:validation:Optional
 	OrgUnitID *string `json:"orgUnitId,omitempty" tf:"org_unit_id,omitempty"`
 
 	// Reference to a OrgUnit to populate orgUnitId.
 	// +kubebuilder:validation:Optional
-	OrgUnitIDRef *v1.Reference `json:"orgUnitIdRef,omitempty" tf:"-"`
+	OrgUnitRef *v1.Reference `json:"orgUnitRef,omitempty" tf:"-"`
 
 	// Selector for a OrgUnit to populate orgUnitId.
 	// +kubebuilder:validation:Optional
-	OrgUnitIDSelector *v1.Selector `json:"orgUnitIdSelector,omitempty" tf:"-"`
+	OrgUnitSelector *v1.Selector `json:"orgUnitSelector,omitempty" tf:"-"`
 
 	// The ID of the role that is assigned.
 	// +crossplane:generate:reference:type=Role
+	// +crossplane:generate:reference:refFieldName=RoleRef
+	// +crossplane:generate:reference:selectorFieldName=RoleSelector
 	// +kubebuilder:validation:Optional
 	RoleID *string `json:"roleId,omitempty" tf:"role_id,omitempty"`
 
 	// Reference to a Role to populate roleId.
 	// +kubebuilder:validation:Optional
-	RoleIDRef *v1.Reference `json:"roleIdRef,omitempty" tf:"-"`
+	RoleRef *v1.Reference `json:"roleRef,omitempty" tf:"-"`
 
 	// Selector for a Role to populate roleId.
 	// +kubebuilder:validation:Optional
-	RoleIDSelector *v1.Selector `json:"roleIdSelector,omitempty" tf:"-"`
+	RoleSelector *v1.Selector `json:"roleSelector,omitempty" tf:"-"`
 
 	// Defaults to `CUSTOMER`. The scope in which this role is assigned. Valid values are :
 	// - `CUSTOMER`
 	// - `ORG_UNIT`
 	// +kubebuilder:validation:Optional
 	ScopeType *string `json:"scopeType,omitempty" tf:"scope_type,omitempty"`
+
+	// Reference to a User to populate assignedTo.
+	// +kubebuilder:validation:Optional
+	UserRef *v1.Reference `json:"userRef,omitempty" tf:"-"`
+
+	// Selector for a User to populate assignedTo.
+	// +kubebuilder:validation:Optional
+	UserSelector *v1.Selector `json:"userSelector,omitempty" tf:"-"`
 }
 
-// AssignmentSpec defines the desired state of Assignment
-type AssignmentSpec struct {
+// RoleAssignmentSpec defines the desired state of RoleAssignment
+type RoleAssignmentSpec struct {
 	v1.ResourceSpec `json:",inline"`
-	ForProvider     AssignmentParameters `json:"forProvider"`
+	ForProvider     RoleAssignmentParameters `json:"forProvider"`
 }
 
-// AssignmentStatus defines the observed state of Assignment.
-type AssignmentStatus struct {
+// RoleAssignmentStatus defines the observed state of RoleAssignment.
+type RoleAssignmentStatus struct {
 	v1.ResourceStatus `json:",inline"`
-	AtProvider        AssignmentObservation `json:"atProvider,omitempty"`
+	AtProvider        RoleAssignmentObservation `json:"atProvider,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
-// Assignment is the Schema for the Assignments API. <no value>
+// RoleAssignment is the Schema for the RoleAssignments API. <no value>
 // +kubebuilder:printcolumn:name="READY",type="string",JSONPath=".status.conditions[?(@.type=='Ready')].status"
 // +kubebuilder:printcolumn:name="SYNCED",type="string",JSONPath=".status.conditions[?(@.type=='Synced')].status"
 // +kubebuilder:printcolumn:name="EXTERNAL-NAME",type="string",JSONPath=".metadata.annotations.crossplane\\.io/external-name"
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:scope=Cluster,categories={crossplane,managed,googleworkspace}
-type Assignment struct {
+type RoleAssignment struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              AssignmentSpec   `json:"spec"`
-	Status            AssignmentStatus `json:"status,omitempty"`
+	Spec              RoleAssignmentSpec   `json:"spec"`
+	Status            RoleAssignmentStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
-// AssignmentList contains a list of Assignments
-type AssignmentList struct {
+// RoleAssignmentList contains a list of RoleAssignments
+type RoleAssignmentList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Assignment `json:"items"`
+	Items           []RoleAssignment `json:"items"`
 }
 
 // Repository type metadata.
 var (
-	Assignment_Kind             = "Assignment"
-	Assignment_GroupKind        = schema.GroupKind{Group: CRDGroup, Kind: Assignment_Kind}.String()
-	Assignment_KindAPIVersion   = Assignment_Kind + "." + CRDGroupVersion.String()
-	Assignment_GroupVersionKind = CRDGroupVersion.WithKind(Assignment_Kind)
+	RoleAssignment_Kind             = "RoleAssignment"
+	RoleAssignment_GroupKind        = schema.GroupKind{Group: CRDGroup, Kind: RoleAssignment_Kind}.String()
+	RoleAssignment_KindAPIVersion   = RoleAssignment_Kind + "." + CRDGroupVersion.String()
+	RoleAssignment_GroupVersionKind = CRDGroupVersion.WithKind(RoleAssignment_Kind)
 )
 
 func init() {
-	SchemeBuilder.Register(&Assignment{}, &AssignmentList{})
+	SchemeBuilder.Register(&RoleAssignment{}, &RoleAssignmentList{})
 }
